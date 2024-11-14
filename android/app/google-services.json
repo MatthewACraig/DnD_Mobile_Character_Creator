@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "335669107426",
+    "project_id": "dungeonsdragonscharcreator",
+    "storage_bucket": "dungeonsdragonscharcreator.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:335669107426:android:ddc2341e11ba0d95379cbb",
+        "android_client_info": {
+          "package_name": "com.example.dnd_character_creator"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeEeszkNd58qJGzMBQFe8lyoCkdm9Em8I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:335669107426:android:01cfca8fc606a381379cbb",
+        "android_client_info": {
+          "package_name": "com.example.dnd_character_creator"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeEeszkNd58qJGzMBQFe8lyoCkdm9Em8I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
