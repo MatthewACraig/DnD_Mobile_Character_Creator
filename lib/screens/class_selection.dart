@@ -1,9 +1,9 @@
-import 'package:dnd_character_creator/Screens/specifics_selection.dart';
-import 'package:dnd_character_creator/Screens/stats_screen.dart';
-import 'package:dnd_character_creator/Widgets/class_data_loader.dart';
-import 'package:dnd_character_creator/Widgets/navigation_button.dart';
+import 'package:dnd_character_creator/screens/background_selection.dart';
+import 'package:dnd_character_creator/screens/specifics_selection.dart';
+import 'package:dnd_character_creator/widgets/loaders/class_data_loader.dart';
+import 'package:dnd_character_creator/widgets/buttons/navigation_button.dart';
 import 'package:flutter/material.dart';
-import 'package:dnd_character_creator/Widgets/button_with_padding.dart';
+import 'package:dnd_character_creator/widgets/buttons/button_with_padding.dart';
 
 
 class ClassSelection extends StatefulWidget {
@@ -37,7 +37,7 @@ class _ClassSelectionState extends State<ClassSelection> {
           NavigationButton(
               onPressed: () {
                 
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const SpecificsScreen()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const BackgroundScreen(characterID: 1)));
               },
               textContent: 'Next'),
         ],
@@ -133,7 +133,7 @@ class _ClassSelectionState extends State<ClassSelection> {
               ),
             ),
           ),
-          SizedBox(height: 25),
+
           // Row(
           //   children: [
           //     SizedBox(width: 6),

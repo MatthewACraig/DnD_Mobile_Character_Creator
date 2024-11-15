@@ -1,9 +1,9 @@
 
-import 'package:dnd_character_creator/Widgets/navigation_button.dart';
-import 'package:dnd_character_creator/Widgets/race_data_loader.dart';
+import 'package:dnd_character_creator/Widgets/buttons/navigation_button.dart';
 import 'package:flutter/material.dart';
-import 'package:dnd_character_creator/Widgets/button_with_padding.dart';
+import 'package:dnd_character_creator/Widgets/buttons/button_with_padding.dart';
 import 'package:dnd_character_creator/Screens/class_selection.dart';
+import 'package:dnd_character_creator/widgets/loaders/race_data_loader.dart';
 
 class RaceSelection extends StatefulWidget {
   const RaceSelection({super.key});

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../Data/background_data.dart';
+import '../../../Data/background_data.dart';
 
 class BackgroundDataLoader extends StatelessWidget {
   const BackgroundDataLoader({super.key, required this.backgroundName});

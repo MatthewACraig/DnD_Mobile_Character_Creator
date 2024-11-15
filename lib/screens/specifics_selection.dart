@@ -1,13 +1,21 @@
+import 'package:dnd_character_creator/screens/stats_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:dnd_character_creator/Data/background_data.dart';
-import 'package:dnd_character_creator/Screens/stats_screen.dart';
-import 'package:dnd_character_creator/Widgets/main_drawer.dart';
-import 'package:dnd_character_creator/Widgets/background_data_loader.dart';
-import 'package:dnd_character_creator/Widgets/button_with_padding.dart';
-import 'package:dnd_character_creator/Widgets/navigation_button.dart';
+
+import '../data/background_data.dart';
+import '../data/class_data.dart';
+import '../data/race_data.dart';
+import '../widgets/buttons/navigation_button.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../widgets/main_drawer.dart';
+import '../widgets/buttons/button_with_padding.dart';
+import '../widgets/loaders/language_data_loader.dart';
+import '../widgets/loaders/proficiency_data_loader.dart';
 
 class SpecificsScreen extends StatefulWidget {
-  const SpecificsScreen({super.key});
+  const SpecificsScreen({super.key, required this.characterID});
+  final int characterID;
+
 
   @override
   State<StatefulWidget> createState() {
@@ -15,37 +23,253 @@ class SpecificsScreen extends StatefulWidget {
   }
 }
 
+
 class _SpecificsScreenState extends State<SpecificsScreen> {
-  final backgrounds = BackgroundData;
-  final List<String> proficiencies = ['Stealth', 'Persuasion', 'Athletics'];
-  final List<String> languages = ['Elvish', 'Dwarvish', 'Common'];
+  final List<String> proficiencies = [
+    'Acrobatics',
+    'Animal Handling',
+    'Arcana',
+    'Athletics',
+    'History',
+    'Insight',
+    'Intimidation',
+    'Investigation',
+    'Medicine',
+    'Nature',
+    'Perception',
+    'Performance',
+    'Persuasion',
+    'Religion',
+    'Sleight of Hand',
+    'Stealth',
+    'Survival'
+  ];
+  List<String> languages = [
+    'Undercommon',
+    'Primordial',
+    'Deep Speech',
+    'Celestial',
+    'Abyssal',
+    'Halfling',
+    'Infernal',
+    'Dwarvish',
+    'Gnomish',
+    'Draconic',
+    'Elvish',
+    'Sylvan',
+    'Common',
+    'Goblin',
+    'Giant',
+    'Orc',
+  ];
+  List<String> _selectedProficiencies = [];
+  List<String> _selectedLanguages = [];
+  List<String> _givenProficiencies = [];
+  List<String> _givenLanguages = [];
+
+
+  late int numberOfProficiencies = 0;
+  late List<String> _possibleProficiencies = [];
+  late int numberOfLanguages = 0;
+
+
   final Color customColor = const Color.fromARGB(255, 138, 28, 20);
+  String _currentSection = 'Proficiency';
 
-  String _selectedBackground = 'Acolyte';
-  String _selectedProficiency = 'Stealth';
-  String _selectedLanguage = 'Elvish';
 
-  String _currentSection =
-      'Background'; // Track which section is currently active
+  final String _selectedClass = 'Druid';
+  final String _selectedBackground = 'Outlander';
+  final String _selectedRace = "Dwarf";
+
+
+  void showSnackbar(String message) {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: const Duration(seconds: 3),
+        content: Text(message),
+      ),
+    );
+  }
+  void updateSelectedProficiency(String proficiencyName) {
+    setState(() {
+      if (_givenProficiencies.contains(proficiencyName)) {
+        showSnackbar('This proficiency is included in your background!');
+      }
+      else if (_selectedProficiencies.contains(proficiencyName)) {
+        _selectedProficiencies.remove(proficiencyName);
+      }
+      else if (_selectedProficiencies.length >= numberOfProficiencies) {
+        showSnackbar('You\'ve already selected all your proficiencies!');
+      }
+      else {
+        _selectedProficiencies.add(proficiencyName);
+      }
+    });
+  }
+
+
+
+
+  void updateSelectedLanguage(String languageName) {
+    setState(() {
+      if (_selectedLanguages.contains(languageName)) {
+        _selectedLanguages.remove(languageName);
+      }
+      else if (_selectedLanguages.length >= numberOfLanguages)
+      {
+        showSnackbar('You\'ve already selected all your languages!' );
+      }
+      else {
+        _selectedLanguages.add(languageName);
+      }
+    });
+  }
+
+
+  List<String> findProficiencies(String skillString) {
+    final RegExp numberPattern = RegExp(r'\d+');
+    final RegExp skillsPattern = RegExp(r'from (.+)$');
+
+
+    List<String> proficiencyList = [];
+    if (skillsPattern.hasMatch(skillString)) {
+      String skillList = skillsPattern.firstMatch(skillString)!.group(1)!;
+      proficiencyList =
+          skillList.split(',').map((skill) => skill.trim()).toList();
+    } else {
+      proficiencyList +=
+          skillString.split(',').map((skill) => skill.trim()).toList();
+    }
+
+
+    if (numberPattern.hasMatch(skillString)) {
+      numberOfProficiencies +=
+          int.parse(numberPattern.firstMatch(skillString)!.group(0)!);
+    }
+    return proficiencyList;
+  }
+
+
+  List<String> findLanguages(String languageString) {
+    final RegExp languagePattern = RegExp(r'from (.+)$');
+
+
+    List<String> languageList = [];
+    if (languagePattern.hasMatch(languageString)) {
+      String languageOptions =
+      languagePattern.firstMatch(languageString)!.group(1)!;
+      languageList =
+          languageOptions.split(',').map((lang) => lang.trim()).toList();
+    } else {
+      languageList +=
+          languageString.split(',').map((lang) => lang.trim()).toList();
+    }
+
+
+    return languageList;
+  }
+
+
+  void _saveSelections() async {
+    final url = Uri.https(
+        'dndmobilecharactercreator-default-rtdb.firebaseio.com',
+        '${widget.characterID}/specifics.json');
+    final response = await http.get(url);
+    if (response.body != 'null') {
+      await http.delete(url);
+    }
+    await http.post(url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'proficiency': _selectedProficiencies,
+          'language': _selectedLanguages,
+        }));
+  }
+
+
+  void findNumLanguages(String input) {
+    final Map<String, int> wordToNumber = {
+      'One': 1,
+      'Two': 2,
+      'Three': 3,
+      'Four': 4,
+      'Five': 5,
+      'Six': 6,
+      'Seven': 7,
+      'Eight': 8,
+      'Nine': 9,
+      'Ten': 10,
+    };
+
+
+    final RegExp wordPattern = RegExp(
+        r'\b(One|Two|Three|Four|Five|Six|Seven|Eight|Nine|Ten)\b',
+        caseSensitive: false);
+    if (wordPattern.hasMatch(input)) {
+      String word = wordPattern.firstMatch(input)!.group(0)!.toLowerCase();
+      String capitalizedWord = word[0].toUpperCase() + word.substring(1);
+      setState(() => numberOfLanguages = (wordToNumber[capitalizedWord]!));
+    } else {
+      setState(() {
+        numberOfLanguages = _givenLanguages.length;
+      });
+    }
+  }
+
 
   @override
   void initState() {
     super.initState();
-    // Set initial content for the "Background" section
-    setMainContent('Background');
+    setMainContent('Proficiency');
+
+
+    List<String> proficiencies =
+    findProficiencies(ClassData[_selectedClass]?['skills']?.first ?? '');
+    _possibleProficiencies = proficiencies;
+    List<String> givenProficiencies = findProficiencies(
+        (BackgroundData[_selectedBackground]?['skills'] as List<dynamic>?)
+            ?.map((skill) => skill.toString())
+            .join(',') ??
+            '');
+
+
+    List<String> givenLanguages = findProficiencies(
+        (RaceData[_selectedRace]?['languages'] as List<dynamic>?)
+            ?.map((language) => language.toString())
+            .join(',') ??
+            '');
+    setState(() {
+      _selectedProficiencies = [];
+      _givenProficiencies = givenProficiencies;
+      _selectedLanguages = [];
+      _givenLanguages = givenLanguages;
+    });
+
+
+    findNumLanguages(
+        (BackgroundData[_selectedBackground]?['languages'] as List<dynamic>?)
+            ?.map((skill) => skill.toString())
+            .join(',') ??
+            '');
   }
+
 
   void setMainContent(String type) {
     setState(() {
-      _currentSection = type; // Update active section
+      _currentSection = type;
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Specifics"),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       drawer: const MainDrawer(),
       bottomNavigationBar: Row(
@@ -60,6 +284,11 @@ class _SpecificsScreenState extends State<SpecificsScreen> {
           NavigationButton(
             textContent: "Next",
             onPressed: () {
+              if(_selectedProficiencies.length != numberOfProficiencies || _selectedLanguages.length != numberOfLanguages)
+              {
+                showSnackbar('You haven\'t chosen all your proficiencies or languages!');
+              }
+              _saveSelections();
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const StatsScreen()),
@@ -71,74 +300,97 @@ class _SpecificsScreenState extends State<SpecificsScreen> {
       body: Column(
         children: [
           const SizedBox(height: 20),
-          const Center(
-            child: Text(
-              'Pick your background, proficiencies, and languages',
-              style: TextStyle(fontSize: 18),
-              textAlign: TextAlign.center,
+          // const Center(
+          //   child: Text(
+          //     'Pick your proficiencies and languages',
+          //     style: TextStyle(fontSize: 18),
+          //     textAlign: TextAlign.center,
+          //   ),
+          // ),
+          // const SizedBox(height: 20),
+          SegmentedButton<String>(
+            style: ButtonStyle(
+              backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                    (states) {
+                  if (states.contains(WidgetState.selected)) {
+                    return customColor;
+                  }
+                  return Colors.grey;
+                },
+              ),
+              foregroundColor: const WidgetStatePropertyAll(Colors.white),
             ),
-          ),
-          const SizedBox(height: 20),
-          Wrap(
-            children: [
-              ButtonWithPadding(
-                onPressed: () => setMainContent('Background'),
-                textContent: 'Background',
+            segments: const <ButtonSegment<String>>[
+              ButtonSegment<String>(
+                value: 'Proficiency',
+                label: SizedBox(
+                    width: 130, child: Center(child: Text('Proficiencies'))),
+                icon: Icon(Icons.catching_pokemon),
               ),
-              ButtonWithPadding(
-                onPressed: () => setMainContent('Proficiency'),
-                textContent: 'Proficiencies',
-              ),
-              ButtonWithPadding(
-                onPressed: () => setMainContent('Language'),
-                textContent: 'Languages',
+              ButtonSegment<String>(
+                value: 'Language',
+                label: SizedBox(
+                    width: 130, child: Center(child: Text('Languages'))),
+                icon: Icon(Icons.language),
               ),
             ],
+            selected: {_currentSection},
+            emptySelectionAllowed: false,
+            onSelectionChanged: (Set<String> newSelection) {
+              setState(() {
+                _currentSection = newSelection.first;
+              });
+            },
           ),
-          const SizedBox(height: 35),
+          const SizedBox(height: 15),
           IndexedStack(
             index: _getIndexForMainContent(),
+            alignment: Alignment.topCenter,
             children: [
               Column(
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    width: 350,
-                    child: Center(
-                      child: DropdownButton<String>(
-                        value: _selectedBackground,
-                        items: backgrounds.keys
-                            .map(
-                              (background) => DropdownMenuItem(
-                                value: background,
-                                child: Text(background),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    height: 390,
+                    child: SingleChildScrollView(
+                        child: Wrap(
+                          children: <Widget>[
+                            for (final proficiency in proficiencies)
+                              ButtonWithPadding(
+                                onPressed: () {
+                                  if (_possibleProficiencies
+                                      .contains(proficiency) || _givenProficiencies.contains(proficiency)) {
+                                    updateSelectedProficiency(proficiency);
+                                  } else {
+                                    showSnackbar(
+                                        'This proficiency is not within your class or background!');
+                                  }
+                                },
+                                textContent: proficiency,
+                                color: (_selectedProficiencies
+                                    .contains(proficiency) ||
+                                    _givenProficiencies.contains(proficiency))
+                                    ? customColor
+                                    : _possibleProficiencies.contains(proficiency)
+                                    ? Colors.grey
+                                    : Colors.blueGrey[800],
                               ),
-                            )
-                            .toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedBackground = value!;
-                          });
-                        },
-                      ),
-                    ),
+                          ],
+                        )),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 25),
                   Container(
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.black),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: SizedBox(
-                      height: 400,
+                      height: 175,
                       width: 350,
                       child: SingleChildScrollView(
-                        child: BackgroundDataLoader(
-                          backgroundName: _selectedBackground,
-                        ),
+                        child: ProficiencyDataWidget(
+                            backgroundName: _selectedBackground,
+                            className: _selectedClass),
                       ),
                     ),
                   ),
@@ -146,37 +398,47 @@ class _SpecificsScreenState extends State<SpecificsScreen> {
               ),
               Column(
                 children: [
-                  DropdownButton<String>(
-                    value: _selectedProficiency,
-                    items: proficiencies.map((proficiency) {
-                      return DropdownMenuItem(
-                        value: proficiency,
-                        child: Text(proficiency),
-                      );
-                    }).toList(),
-                    onChanged: (newValue) {
-                      setState(() {
-                        _selectedProficiency = newValue!;
-                      });
-                    },
+                  SizedBox(
+                    height: 400,
+                    child: SingleChildScrollView(
+                      child: Wrap(
+                        alignment: WrapAlignment.center,
+                        children: <Widget>[
+                          for (final language in languages)
+                            ButtonWithPadding(
+                                onPressed: () {
+                                  if (!_givenLanguages.contains(language)) {
+                                    updateSelectedLanguage(language);
+                                  }
+                                  else{
+                                    showSnackbar('This language is included in your race!');
+                                  }
+                                },
+                                textContent: language,
+                                color: (_selectedLanguages.contains(language) ||
+                                    _givenLanguages.contains(language))
+                                    ? customColor
+                                    : Colors.grey),
+                        ],
+                      ),
+                    ),
                   ),
-                ],
-              ),
-              Column(
-                children: [
-                  DropdownButton<String>(
-                    value: _selectedLanguage,
-                    items: languages.map((language) {
-                      return DropdownMenuItem(
-                        value: language,
-                        child: Text(language),
-                      );
-                    }).toList(),
-                    onChanged: (newValue) {
-                      setState(() {
-                        _selectedLanguage = newValue!;
-                      });
-                    },
+                  const SizedBox(height: 15),
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: SizedBox(
+                      height: 130,
+                      width: 350,
+                      child: SingleChildScrollView(
+                        child: LanguageDataWidget(
+                          backgroundName: _selectedBackground,
+                          raceName: _selectedRace,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -187,13 +449,13 @@ class _SpecificsScreenState extends State<SpecificsScreen> {
     );
   }
 
+
   int _getIndexForMainContent() {
-    if (_currentSection == 'Background') {
+    if (_currentSection == 'Proficiency') {
       return 0;
-    } else if (_currentSection == 'Proficiency') {
-      return 1;
     } else {
-      return 2;
+      return 1;
     }
   }
 }
+
