@@ -1,21 +1,26 @@
-import 'package:dnd_character_creator/screens/stats_screen.dart';
+import 'package:dnd_character_creator/screens/dnd_forms/stats_screen.dart';
 import 'package:dnd_character_creator/widgets/dnd_form_widgets/main_drawer.dart';
 import 'package:flutter/material.dart';
 
-import '../data/background_data.dart';
-import '../data/class_data.dart';
-import '../data/race_data.dart';
-import '../widgets/buttons/navigation_button.dart';
+import '../../data/background_data.dart';
+import '../../data/class_data.dart';
+import '../../data/race_data.dart';
+import '../../widgets/buttons/navigation_button.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import '../widgets/buttons/button_with_padding.dart';
-import '../widgets/loaders/language_data_loader.dart';
-import '../widgets/loaders/proficiency_data_loader.dart';
+import '../../widgets/buttons/button_with_padding.dart';
+import '../../widgets/loaders/language_data_loader.dart';
+import '../../widgets/loaders/proficiency_data_loader.dart';
 
 class SpecificsScreen extends StatefulWidget {
-  const SpecificsScreen({super.key, required this.characterID});
-  final int characterID;
+ 
+  final String className; 
+  final String raceName;
+  final String characterName;
+
+
+  const SpecificsScreen({super.key, required this.characterName, required this.className, required this.raceName});
 
 
   @override
@@ -175,7 +180,7 @@ class _SpecificsScreenState extends State<SpecificsScreen> {
   void _saveSelections() async {
     final url = Uri.https(
         'dndmobilecharactercreator-default-rtdb.firebaseio.com',
-        '${widget.characterID}/specifics.json');
+        '${widget.characterName}/specifics.json');
     final response = await http.get(url);
     if (response.body != 'null') {
       await http.delete(url);

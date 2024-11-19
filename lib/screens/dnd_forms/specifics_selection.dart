@@ -5,7 +5,8 @@ import 'package:dnd_character_creator/Widgets/dnd_form_widgets/main_drawer.dart'
 import 'package:dnd_character_creator/Widgets/dnd_form_widgets/background_data_loader.dart';
 import 'package:dnd_character_creator/Widgets/buttons/button_with_padding.dart';
 import 'package:dnd_character_creator/Widgets/buttons/navigation_button.dart';
-import 'package:dnd_character_creator/screens/stats_screen.dart';
+import 'package:dnd_character_creator/screens/dnd_forms/stats_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SpecificsScreen extends StatefulWidget {
   final String characterName;
@@ -20,8 +21,43 @@ class SpecificsScreen extends StatefulWidget {
 
 class _SpecificsScreenState extends State<SpecificsScreen> {
   final Map<String, dynamic> backgrounds = BackgroundData;
-  final List<String> proficiencies = ['Stealth', 'Persuasion', 'Athletics'];
-  final List<String> languages = ['Elvish', 'Dwarvish', 'Common'];
+  final List<String> proficiencies = [
+    'Acrobatics',
+    'Animal Handling',
+    'Arcana',
+    'Athletics',
+    'History',
+    'Insight',
+    'Intimidation',
+    'Investigation',
+    'Medicine',
+    'Nature',
+    'Perception',
+    'Performance',
+    'Persuasion',
+    'Religion',
+    'Sleight of Hand',
+    'Stealth',
+    'Survival'
+  ];
+  List<String> languages = [
+    'Undercommon',
+    'Primordial',
+    'Deep Speech',
+    'Celestial',
+    'Abyssal',
+    'Halfling',
+    'Infernal',
+    'Dwarvish',
+    'Gnomish',
+    'Draconic',
+    'Elvish',
+    'Sylvan',
+    'Common',
+    'Goblin',
+    'Giant',
+    'Orc',
+  ];
 
   String _selectedBackground = 'Acolyte';
   String _selectedProficiency = 'Stealth';
@@ -50,13 +86,48 @@ class _SpecificsScreenState extends State<SpecificsScreen> {
   }
 
   // Save data to Firestore
+  // Future<void> saveToFirestore() async {
+  //   try {
+  //     // Access Firestore
+  //     final firestore = FirebaseFirestore.instance;
+
+  //     // Reference to the document for this character
+  //     final docRef = firestore.collection('characters').doc(widget.characterName);
+
+  //     // Set the data
+  //     await docRef.set({
+  //       'race' : widget.raceName,
+  //       'class': widget.className,
+  //       'background': _selectedBackground,
+  //       'proficiency': _selectedProficiency,
+  //       'language': _selectedLanguage,
+  //     });
+
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text("Data saved successfully!")),
+  //     );
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text("Failed to save data: $e")),
+  //     );
+  //   }
+  // }
   Future<void> saveToFirestore() async {
+    //grab the current userID so we can save the data to the correct user
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      // Handle user not being authenticated
+      print('User not authenticated');
+      return;
+    }
+    final userId = user.uid;
+
     try {
       // Access Firestore
       final firestore = FirebaseFirestore.instance;
 
       // Reference to the document for this character
-      final docRef = firestore.collection('characters').doc(widget.characterName);
+      final docRef = firestore.collection('app_user_profiles/${userId}/characters').doc(widget.characterName);
 
       // Set the data
       await docRef.set({

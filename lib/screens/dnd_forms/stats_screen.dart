@@ -1,15 +1,16 @@
+import 'package:dnd_character_creator/screens/dnd_forms/equipment_selection.dart';
 import 'package:dnd_character_creator/widgets/dnd_form_widgets/main_drawer.dart';
 import 'package:flutter/material.dart';
 
 
 
-import '../Widgets/Buttons/navigation_button.dart';
+import '../../Widgets/Buttons/navigation_button.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import '../widgets/buttons/expandable_fab.dart';
-import '../widgets/dice_roller.dart';
-import '../widgets/point_buy.dart';
+import '../../widgets/buttons/expandable_fab.dart';
+import '../../widgets/dice_roller.dart';
+import '../../widgets/point_buy.dart';
 
 class StatsScreen extends StatefulWidget {
   const StatsScreen({super.key, this.characterID});
@@ -86,10 +87,12 @@ class _StatsScreenState extends State<StatsScreen> {
             NavigationButton(
               onPressed: () {
                 _saveSelections();
-                // if(pointsLeft != 0)
-                //   {
-                //     showSnackbar('You have $pointsLeft points left to distribute!');
-                //   }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const EquipmentSelection(),
+                  ),
+                );
               },
               textContent: 'Next',
             ),
