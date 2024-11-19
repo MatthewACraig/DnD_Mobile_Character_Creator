@@ -10,8 +10,9 @@ import 'package:dnd_character_creator/screens/stats_screen.dart';
 class SpecificsScreen extends StatefulWidget {
   final String characterName;
   final String className; 
+  final String raceName;
 
-  const SpecificsScreen({super.key, required this.characterName, required this.className});
+  const SpecificsScreen({super.key, required this.characterName, required this.className, required this.raceName});
 
   @override
   State<SpecificsScreen> createState() => _SpecificsScreenState();
@@ -26,7 +27,6 @@ class _SpecificsScreenState extends State<SpecificsScreen> {
   String _selectedProficiency = 'Stealth';
   String _selectedLanguage = 'Elvish';
   String _currentSection = 'Background';
-  String _currentRace = 'Human';
 
   @override
   void initState() {
@@ -37,9 +37,6 @@ class _SpecificsScreenState extends State<SpecificsScreen> {
     }
     if (!proficiencies.contains(_selectedProficiency)) {
       _selectedProficiency = proficiencies.first;
-    }
-    if (!languages.contains(_selectedLanguage)) {
-      _selectedLanguage = languages.first;
     }
     if (!languages.contains(_selectedLanguage)) {
       _selectedLanguage = languages.first;
@@ -63,6 +60,7 @@ class _SpecificsScreenState extends State<SpecificsScreen> {
 
       // Set the data
       await docRef.set({
+        'race' : widget.raceName,
         'class': widget.className,
         'background': _selectedBackground,
         'proficiency': _selectedProficiency,

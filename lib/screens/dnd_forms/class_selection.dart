@@ -7,9 +7,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ClassSelection extends StatefulWidget {
-  final String characterName; // Add characterName parameter
+  final String characterName;
+  final String race; // Add characterName parameter
 
-  const ClassSelection({Key? key, required this.characterName}) : super(key: key); // Update constructor
+  const ClassSelection({Key? key, required this.characterName, required this.race}) : super(key: key); // Update constructor
 
   @override
   _ClassSelectionState createState() => _ClassSelectionState();
@@ -71,7 +72,8 @@ class _ClassSelectionState extends State<ClassSelection> {
                   MaterialPageRoute(
                     builder: (context) => SpecificsScreen(
                       characterName: widget.characterName, // Pass characterName
-                      className: selectedClassName,       // Pass selected class name
+                      className: selectedClassName, 
+                      raceName: widget.race,      // Pass selected class name
                     ),
                   ),
                 );

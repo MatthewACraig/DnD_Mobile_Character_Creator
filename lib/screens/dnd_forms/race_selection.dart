@@ -66,7 +66,7 @@ class _RaceSelectionState extends State<RaceSelection> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ClassSelection(characterName: widget.characterName), // Pass characterName
+                  builder: (context) => ClassSelection(characterName: widget.characterName, race: _selectedRace), // Pass characterName
                 ),
               );
             },

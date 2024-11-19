@@ -31,28 +31,6 @@ class _CharacterNameState extends State<CharacterName> {
         print('No user is signed in!');
         return;
       }
-
-      // Get the current user's UID
-      String uid = user.uid;
-
-      // Reference to Firestore collection under the user's UID
-      // CollectionReference charactersRef = FirebaseFirestore.instance
-      //     .collection('users')
-      //     .doc(uid)
-      //     .collection('characters');
-
-      // Save the character name with an empty initial data
-      // await charactersRef.doc(_characterName).set({
-      //   'name': _characterName,
-      //   'createdAt': FieldValue.serverTimestamp(),
-      // });
-
-      // FirebaseFirestore.instance.collection('characters').doc(uid).set({
-      //   'name': _characterName,
-      //   'createdAt': FieldValue.serverTimestamp(),
-      // });
-
-      print('Character name saved successfully!');
     } catch (e) {
       print('Error saving character name: $e');
     }
