@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:dnd_character_creator/Data/race_data.dart';
 
+
 class RaceDataLoader extends StatelessWidget {
-  const RaceDataLoader({super.key, required this.raceName});
+  RaceDataLoader({super.key, required this.raceName});
 
   final String raceName;
 
   @override
   Widget build(BuildContext context) {
-    final raceDetails = RaceData[raceName] ?? {};
-
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -27,7 +26,7 @@ class RaceDataLoader extends StatelessWidget {
 
           // Description
           Text(
-            raceDetails['description'] ?? 'No description available for this race.',
+            RaceData[raceName]?['description'] ?? '',
             style: const TextStyle(
               fontSize: 16,
               color: Colors.black87,
@@ -38,27 +37,31 @@ class RaceDataLoader extends StatelessWidget {
           // Attributes with labels and icons
           _buildAttributeRow(
             label: 'Speed',
-            value: raceDetails['speed'] ?? 'Unknown',
+            value: RaceData[raceName]?['speed'] ?? '',
             icon: Icons.directions_run,
           ),
           _buildAttributeRow(
             label: 'Size',
-            value: raceDetails['size'] ?? 'Unknown',
+            value: RaceData[raceName]?['size'] ?? '',
             icon: Icons.straighten,
           ),
           _buildAttributeRow(
             label: 'Vision',
-            value: raceDetails['vision'] ?? 'Unknown',
+            value: RaceData[raceName]?['vision'] ?? '',
             icon: Icons.visibility,
           ),
           _buildAttributeRow(
             label: 'Languages',
-            value: (raceDetails['languages'] as List<dynamic>?)?.join(', ') ?? 'None',
+            value: (RaceData[raceName]?['languages'] as List<dynamic>?)
+                    ?.join(', ') ??
+                '',
             icon: Icons.language,
           ),
           _buildAttributeRow(
             label: 'Traits',
-            value: (raceDetails['traits'] as List<dynamic>?)?.join(', ') ?? 'None',
+            value: (RaceData[raceName]?['traits'] as List<dynamic>?)
+                    ?.join(', ') ??
+                '',
             icon: Icons.star,
           ),
         ],

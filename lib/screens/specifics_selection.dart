@@ -1,4 +1,5 @@
 import 'package:dnd_character_creator/screens/stats_screen.dart';
+import 'package:dnd_character_creator/widgets/dnd_form_widgets/main_drawer.dart';
 import 'package:flutter/material.dart';
 
 import '../data/background_data.dart';
@@ -7,7 +8,7 @@ import '../data/race_data.dart';
 import '../widgets/buttons/navigation_button.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../widgets/main_drawer.dart';
+
 import '../widgets/buttons/button_with_padding.dart';
 import '../widgets/loaders/language_data_loader.dart';
 import '../widgets/loaders/proficiency_data_loader.dart';

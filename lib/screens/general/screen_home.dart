@@ -14,13 +14,15 @@
 import 'dart:async';
 
 // Flutter external package imports
-import 'package:dnd_character_creator/screens/race_selection.dart';
+import 'package:dnd_character_creator/screens/dnd_forms/character_name.dart';
+import 'package:dnd_character_creator/screens/dnd_forms/race_selection.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
 // App relative file imports
-import '../../util/message_display/snackbar.dart';
+
 
 //////////////////////////////////////////////////////////////////////////
 // StateFUL widget which manages state. Simply initializes the state object.
@@ -67,6 +69,9 @@ class _ScreenHomeState extends ConsumerState<ScreenHome> {
   //////////////////////////////////////////////////////////////////////////
   @override
   Widget build(BuildContext context) {
+
+    var uuid = Uuid();
+    var characterID = uuid.v4();
     // Return the scaffold
     return Scaffold(
       floatingActionButton: FloatingActionButton(
@@ -74,7 +79,7 @@ class _ScreenHomeState extends ConsumerState<ScreenHome> {
         onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => const RaceSelection(),
+              builder: (context) => CharacterName(),
             ),
           );
         },

@@ -1,13 +1,15 @@
-import 'package:dnd_character_creator/screens/dnd_forms/background_selection.dart';
-import 'package:dnd_character_creator/screens/specifics_selection.dart';
-import 'package:dnd_character_creator/widgets/loaders/class_data_loader.dart';
-import 'package:dnd_character_creator/widgets/buttons/navigation_button.dart';
+import 'package:dnd_character_creator/Screens/dnd_forms/specifics_selection.dart';
+import 'package:dnd_character_creator/Widgets/dnd_form_widgets/class_data_loader.dart';
+import 'package:dnd_character_creator/Widgets/buttons/navigation_button.dart';
 import 'package:flutter/material.dart';
 import 'package:dnd_character_creator/widgets/buttons/button_with_padding.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ClassSelection extends StatefulWidget {
-  const ClassSelection({Key? key}) : super(key: key);
+  final String characterName; // Add characterName parameter
+
+  const ClassSelection({Key? key, required this.characterName}) : super(key: key); // Update constructor
 
   @override
   _ClassSelectionState createState() => _ClassSelectionState();
@@ -16,6 +18,30 @@ class ClassSelection extends StatefulWidget {
 class _ClassSelectionState extends State<ClassSelection> {
   String selectedClassName = 'Sorcerer'; // Default class
 
+  // Method to save the selected class to Firebase
+  void _saveSelections() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      // Handle user not being authenticated
+      print('User not authenticated');
+      return;
+    }
+    final userId = user.uid;
+
+    final docRef = FirebaseFirestore.instance
+        .collection('app_user_profiles')
+        .doc(userId); // Use the authenticated user's ID
+
+    try {
+      await docRef.set({
+        'class': selectedClassName,
+      }, SetOptions(merge: true)); // Merge ensures only this field is updated
+    } catch (e) {
+      print('Error saving class: $e');
+    }
+  }
+
+  // Updates the selected class and calls setState
   void updateSelectedClass(String className) {
     setState(() {
       selectedClassName = className;
@@ -25,49 +51,54 @@ class _ClassSelectionState extends State<ClassSelection> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: Row(
-        children: [
-          NavigationButton(
-            textContent: "Back",
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          const SizedBox(width: 30),
-          NavigationButton(
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 30.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            NavigationButton(
+              textContent: "Back",
               onPressed: () {
-                
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const BackgroundScreen(characterID: 1)));
+                Navigator.pop(context);
               },
-              textContent: 'Next'),
-        ],
+            ),
+            NavigationButton(
+              textContent: 'Next',
+              onPressed: () {
+                _saveSelections(); // Save class selection before navigating
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SpecificsScreen(
+                      characterName: widget.characterName, // Pass characterName
+                      className: selectedClassName,       // Pass selected class name
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
       appBar: AppBar(
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         title: Text(
-          'Class Selection',
+          'Class Selection for ${widget.characterName}', // Use characterName here
           style: Theme.of(context).appBarTheme.titleTextStyle,
         ),
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const SizedBox(
-            height: 15,
-            width: 15,
-          ),
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              const Center(
-                child: Text(
-                  'Pick your class',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
-            ],
+          const SizedBox(height: 15),
+          const Text(
+            'Pick your class',
+            style: TextStyle(fontSize: 18),
           ),
           const SizedBox(height: 20),
           Wrap(
+            spacing: 10, // Space between buttons
+            runSpacing: 10, // Space between rows
             children: <Widget>[
               ButtonWithPadding(
                 onPressed: () => updateSelectedClass('Barbarian'),
@@ -133,21 +164,6 @@ class _ClassSelectionState extends State<ClassSelection> {
               ),
             ),
           ),
-
-          // Row(
-          //   children: [
-          //     SizedBox(width: 6),
-          //     NavigationButton(
-          //         onPressed: () {
-          //           Navigator.pop(context);
-          //         },
-          //         textContent: 'Back'),
-          //     SizedBox(width: 30),
-          //     NavigationButton(onPressed: () {
-          //       Navigator.push(context, MaterialPageRoute(builder:(context) => StatsScreen(),));
-          //     }, textContent: 'Next'),
-          //   ],
-          // ),
         ],
       ),
     );

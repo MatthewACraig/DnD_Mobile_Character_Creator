@@ -1,12 +1,10 @@
 import 'package:dnd_character_creator/screens/specifics_selection.dart';
+import 'package:dnd_character_creator/widgets/dnd_form_widgets/main_drawer.dart';
 import 'package:flutter/material.dart';
-import '../data/background_data.dart';
-import '../widgets/loaders/background_data_loader.dart';
-import '../widgets/buttons/navigation_button.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
-import '../widgets/main_drawer.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dnd_character_creator/widgets/loaders/background_data_loader.dart';
+import 'package:dnd_character_creator/data/background_data.dart';
+import 'package:dnd_character_creator/widgets/buttons/navigation_button.dart';
 
 class BackgroundScreen extends StatefulWidget {
   const BackgroundScreen({super.key, required this.characterID});
@@ -24,23 +22,16 @@ class _BackgroundScreenState extends State<BackgroundScreen> {
 
   String _selectedBackground = 'Acolyte';
 
-  void _saveSelections() async {
-    final url = Uri.https(
-        'dndmobilecharactercreator-default-rtdb.firebaseio.com',
-        '${widget.characterID}.json');
-    final response = await http.get(url);
-    if (response.body != 'null') {
-      await http.delete(url);
-    }
-    await http.post(url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({
-          'background': _selectedBackground,
-        }));
-  }
+  // Method to save the selected background to Firestore
+  Future<void> _saveSelections() async {
+    // Get a reference to the Firestore collection for the specific character
+    final characterRef = FirebaseFirestore.instance.collection('characters').doc(widget.characterID.toString());
 
+    // Set the background data for the character
+    await characterRef.set({
+      'background': _selectedBackground,
+    }, SetOptions(merge: true));  // Use merge to avoid overwriting existing data
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +56,7 @@ class _BackgroundScreenState extends State<BackgroundScreen> {
               _saveSelections();
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const SpecificsScreen(characterID: 1)),
+                MaterialPageRoute(builder: (context) => SpecificsScreen(characterID: widget.characterID)),
               );
             },
           ),
