@@ -1,5 +1,5 @@
 // import 'package:dnd_character_creator/Screens/dnd_forms/specifics_selection.dart';
-import 'package:dnd_character_creator/screens/specifics_screen.dart';
+import 'package:dnd_character_creator/screens/dnd_forms/specifics_screen.dart';
 import 'package:dnd_character_creator/Widgets/dnd_form_widgets/class_data_loader.dart';
 import 'package:dnd_character_creator/Widgets/buttons/navigation_button.dart';
 import 'package:flutter/material.dart';

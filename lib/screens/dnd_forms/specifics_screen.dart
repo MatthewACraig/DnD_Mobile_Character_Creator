@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dnd_character_creator/screens/dnd_forms/stats_screen.dart';
 import 'package:dnd_character_creator/widgets/dnd_form_widgets/main_drawer.dart';
 import 'package:flutter/material.dart';
@@ -6,12 +7,13 @@ import '../../data/background_data.dart';
 import '../../data/class_data.dart';
 import '../../data/race_data.dart';
 import '../../widgets/buttons/navigation_button.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 import '../../widgets/buttons/button_with_padding.dart';
 import '../../widgets/loaders/language_data_loader.dart';
 import '../../widgets/loaders/proficiency_data_loader.dart';
+
 
 class SpecificsScreen extends StatefulWidget {
  
@@ -177,23 +179,62 @@ class _SpecificsScreenState extends State<SpecificsScreen> {
   }
 
 
-  void _saveSelections() async {
-    final url = Uri.https(
-        'dndmobilecharactercreator-default-rtdb.firebaseio.com',
-        '${widget.characterName}/specifics.json');
-    final response = await http.get(url);
-    if (response.body != 'null') {
-      await http.delete(url);
+  // void _saveSelections() async {
+  //   final url = Uri.https(
+  //       'dndmobilecharactercreator-default-rtdb.firebaseio.com',
+  //       '${widget.characterName}/specifics.json');
+  //   final response = await http.get(url);
+  //   if (response.body != 'null') {
+  //     await http.delete(url);
+  //   }
+  //   await http.post(url,
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: json.encode({
+  //         'proficiency': _selectedProficiencies,
+  //         'language': _selectedLanguages,
+  //       }));
+  // } bees old one for reference 
+  
+  //Method to save the selections to the database
+  Future<void> _saveSelections() async {
+    //grab the current userID so we can save the data to the correct user
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      // Handle user not being authenticated
+      print('User not authenticated');
+      return;
     }
-    await http.post(url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({
-          'proficiency': _selectedProficiencies,
-          'language': _selectedLanguages,
-        }));
+    final userId = user.uid;
+
+    try {
+      // Access Firestore
+      final firestore = FirebaseFirestore.instance;
+      
+
+      // Reference to the document for this character
+      final docRef = firestore.collection('app_user_profiles/${userId}/characters').doc(widget.characterName);
+
+      // Set the data
+      await docRef.set({
+        'race' : widget.raceName,
+        'class': widget.className,
+        'backgrounds': _selectedBackground,
+        'proficiencies': "${_selectedProficiencies + _givenProficiencies}",
+        'languages': "${_selectedLanguages + _givenLanguages}",
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Data saved successfully!")),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to save data: $e")),
+      );
+    }
   }
+
 
 
   void findNumLanguages(String input) {

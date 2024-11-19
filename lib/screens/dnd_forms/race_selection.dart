@@ -3,8 +3,6 @@ import 'package:dnd_character_creator/Widgets/dnd_form_widgets/race_data_loader.
 import 'package:flutter/material.dart';
 import 'package:dnd_character_creator/Widgets/buttons/button_with_padding.dart';
 import 'package:dnd_character_creator/Screens/dnd_forms/class_selection.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
