@@ -11,7 +11,8 @@ final Map<String, Map<String, dynamic>> RaceData = {
       'Celestial Resistance',
       'Radiant Soul/Radiant Consumption/Radiant Shield',
     ],
-    'description': 'Aasimar are beings with celestial ancestry, often marked by radiant beauty and a strong connection to the divine.',
+    'description':
+        'Aasimar are beings with celestial ancestry, often marked by radiant beauty and a strong connection to the divine.',
   },
   'Dragonborn': {
     'abilityScoreIncrease': {'Strength': 2, 'Charisma': 1},
@@ -24,7 +25,8 @@ final Map<String, Map<String, dynamic>> RaceData = {
       'Breath Weapon',
       'Damage Resistance',
     ],
-    'description': 'Dragonborn are proud and powerful beings, with draconic ancestry that grants them breath weapons and elemental resistance.',
+    'description':
+        'Dragonborn are proud and powerful beings, with draconic ancestry that grants them breath weapons and elemental resistance.',
   },
   'Dragonborn (Gem)': {
     'abilityScoreIncrease': {'Strength': 2, 'Charisma': 1},
@@ -38,7 +40,8 @@ final Map<String, Map<String, dynamic>> RaceData = {
       'Psionic Mind',
       'Damage Resistance',
     ],
-    'description': 'Gem Dragonborn are infused with the power of gem dragons, exhibiting psionic abilities and unique elemental resistances.',
+    'description':
+        'Gem Dragonborn are infused with the power of gem dragons, exhibiting psionic abilities and unique elemental resistances.',
   },
   'Dwarf': {
     'abilityScoreIncrease': {'Constitution': 2},
@@ -51,7 +54,8 @@ final Map<String, Map<String, dynamic>> RaceData = {
       'Dwarven Combat Training',
       'Stonecunning',
     ],
-    'description': 'Dwarves are known for their hardiness, resilience, and skill in stone and metalwork, with strong traditions and a fierce loyalty.',
+    'description':
+        'Dwarves are known for their hardiness, resilience, and skill in stone and metalwork, with strong traditions and a fierce loyalty.',
   },
   'Elf': {
     'abilityScoreIncrease': {'Dexterity': 2},
@@ -64,7 +68,8 @@ final Map<String, Map<String, dynamic>> RaceData = {
       'Fey Ancestry',
       'Trance',
     ],
-    'description': 'Elves are graceful, perceptive beings with an affinity for magic and a deep connection to the natural world.',
+    'description':
+        'Elves are graceful, perceptive beings with an affinity for magic and a deep connection to the natural world.',
   },
   'Gnome': {
     'abilityScoreIncrease': {'Intelligence': 2},
@@ -77,7 +82,8 @@ final Map<String, Map<String, dynamic>> RaceData = {
       'Artificer\'s Lore',
       'Tinker (if Rock Gnome)',
     ],
-    'description': 'Gnomes are curious and inventive, with a keen intellect and a natural talent for illusion and tinkering.',
+    'description':
+        'Gnomes are curious and inventive, with a keen intellect and a natural talent for illusion and tinkering.',
   },
   'Goliath': {
     'abilityScoreIncrease': {'Strength': 2, 'Constitution': 1},
@@ -90,7 +96,8 @@ final Map<String, Map<String, dynamic>> RaceData = {
       'Stone\'s Endurance',
       'Powerful Build',
     ],
-    'description': 'Goliaths are towering, resilient, and fiercely competitive, adapted to high-altitude environments and known for their physical prowess.',
+    'description':
+        'Goliaths are towering, resilient, and fiercely competitive, adapted to high-altitude environments and known for their physical prowess.',
   },
   'Halfling': {
     'abilityScoreIncrease': {'Dexterity': 2},
@@ -103,10 +110,18 @@ final Map<String, Map<String, dynamic>> RaceData = {
       'Brave',
       'Halfling Nimbleness',
     ],
-    'description': 'Halflings are cheerful, resourceful, and good-natured folk, known for their luck and resilience.',
+    'description':
+        'Halflings are cheerful, resourceful, and good-natured folk, known for their luck and resilience.',
   },
   'Human': {
-    'abilityScoreIncrease': {'All': 1},
+    'abilityScoreIncrease': {
+      'Strength': 1,
+      'Dexterity': 1,
+      'Constitution': 1,
+      'Wisdom': 1,
+      'Intelligence': 1,
+      'Charisma': 1,
+    },
     'size': 'Medium',
     'speed': '30 ft./round',
     'vision': 'Normal',
@@ -115,7 +130,8 @@ final Map<String, Map<String, dynamic>> RaceData = {
       'Versatile Ability Scores',
       'Adaptable Nature',
     ],
-    'description': 'Humans are incredibly diverse, adaptable, and ambitious, thriving in nearly any environment and culture.',
+    'description':
+        'Humans are incredibly diverse, adaptable, and ambitious, thriving in nearly any environment and culture.',
   },
   'Orc': {
     'abilityScoreIncrease': {'Strength': 2, 'Constitution': 1},
@@ -128,7 +144,8 @@ final Map<String, Map<String, dynamic>> RaceData = {
       'Powerful Build',
       'Primal Intuition',
     ],
-    'description': 'Orcs are strong and resilient, with a fierce will to survive and a proud cultural heritage that values strength.',
+    'description':
+        'Orcs are strong and resilient, with a fierce will to survive and a proud cultural heritage that values strength.',
   },
   'Tiefling': {
     'abilityScoreIncrease': {'Charisma': 2, 'Intelligence': 1},
@@ -140,6 +157,7 @@ final Map<String, Map<String, dynamic>> RaceData = {
       'Hellish Resistance',
       'Infernal Legacy',
     ],
-    'description': 'Tieflings bear fiendish heritage, often marked by horns or tails, with an innate resistance to fire and a knack for dark magic.',
+    'description':
+        'Tieflings bear fiendish heritage, often marked by horns or tails, with an innate resistance to fire and a knack for dark magic.',
   },
 };

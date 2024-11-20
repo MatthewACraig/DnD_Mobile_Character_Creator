@@ -338,7 +338,7 @@ class _SpecificsScreenState extends State<SpecificsScreen> {
               _saveSelections();
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const StatsScreen()),
+                MaterialPageRoute(builder: (context) => StatsScreen(characterName: widget.characterName, selectedRace: widget.raceName,)),
               );
             },
           ),
