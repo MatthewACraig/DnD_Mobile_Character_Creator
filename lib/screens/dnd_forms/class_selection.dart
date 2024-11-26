@@ -1,4 +1,5 @@
 // import 'package:dnd_character_creator/Screens/dnd_forms/specifics_selection.dart';
+import 'package:dnd_character_creator/screens/dnd_forms/background_selcetion.dart';
 import 'package:dnd_character_creator/screens/dnd_forms/specifics_screen.dart';
 import 'package:dnd_character_creator/Widgets/dnd_form_widgets/class_data_loader.dart';
 import 'package:dnd_character_creator/Widgets/buttons/navigation_button.dart';
@@ -54,7 +55,7 @@ class _ClassSelectionState extends State<ClassSelection> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30.0),
+        padding: const EdgeInsets.all(16.0, ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -71,7 +72,7 @@ class _ClassSelectionState extends State<ClassSelection> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SpecificsScreen(
+                    builder: (context) => BackgroundScreen(
                       // Pass characterName, className, and raceName
                       characterName: widget.characterName, 
                       className: selectedClassName, 
@@ -161,13 +162,14 @@ class _ClassSelectionState extends State<ClassSelection> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: SizedBox(
-              height: 350,
-              width: 350,
+              height: 325,
+              width: 325,
               child: SingleChildScrollView(
                 child: ClassDataWidget(className: selectedClassName),
               ),
             ),
           ),
+          
         ],
       ),
     );

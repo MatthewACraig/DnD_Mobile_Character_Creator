@@ -20,9 +20,10 @@ class SpecificsScreen extends StatefulWidget {
   final String className; 
   final String raceName;
   final String characterName;
+  final String backgroundName;
 
 
-  const SpecificsScreen({super.key, required this.characterName, required this.className, required this.raceName});
+  const SpecificsScreen({super.key, required this.characterName, required this.className, required this.raceName, required this.backgroundName});
 
 
   @override
@@ -178,24 +179,6 @@ class _SpecificsScreenState extends State<SpecificsScreen> {
     return languageList;
   }
 
-
-  // void _saveSelections() async {
-  //   final url = Uri.https(
-  //       'dndmobilecharactercreator-default-rtdb.firebaseio.com',
-  //       '${widget.characterName}/specifics.json');
-  //   final response = await http.get(url);
-  //   if (response.body != 'null') {
-  //     await http.delete(url);
-  //   }
-  //   await http.post(url,
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: json.encode({
-  //         'proficiency': _selectedProficiencies,
-  //         'language': _selectedLanguages,
-  //       }));
-  // } bees old one for reference 
   
   //Method to save the selections to the database
   Future<void> _saveSelections() async {
@@ -220,7 +203,7 @@ class _SpecificsScreenState extends State<SpecificsScreen> {
       await docRef.set({
         'race' : widget.raceName,
         'class': widget.className,
-        'backgrounds': _selectedBackground,
+        'background': widget.backgroundName,
         'proficiencies': "${_selectedProficiencies + _givenProficiencies}",
         'languages': "${_selectedLanguages + _givenLanguages}",
       });
