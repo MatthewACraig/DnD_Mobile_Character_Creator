@@ -38,6 +38,7 @@ class _ClassSelectionState extends State<ClassSelection> {
     try {
       await docRef.set({
         'class': selectedClassName,
+        'name' : widget.characterName,
       }, SetOptions(merge: true)); // Merge ensures only this field is updated
     } catch (e) {
       print('Error saving class: $e');

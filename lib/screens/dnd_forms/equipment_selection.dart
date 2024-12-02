@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dnd_character_creator/screens/dnd_forms/spell_selection.dart';
 import 'package:dnd_character_creator/widgets/loaders/weapon_data_loader.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:dnd_character_creator/widgets/loaders/alignment_data_loader.dart';
 import '../../widgets/dnd_form_widgets/main_drawer.dart';
@@ -75,7 +78,28 @@ class _EquipmentSelectionState extends State<EquipmentSelection> {
 
   String _currentSection = 'Weapon 1';
 
-  void _saveSelections() async {}
+  void _saveSelections() async {
+    final String? currentUserUid = FirebaseAuth.instance.currentUser?.uid;
+    if (currentUserUid != null) {
+      final docRef = FirebaseFirestore.instance
+          .collection('app_user_profiles')
+          .doc(currentUserUid)
+          .collection('characters')
+          .doc(widget.characterName); // Use the UID directly
+
+      try {
+        await docRef.set({
+          'weaponOne': weaponOne,
+          'weaponTwo': weaponTwo,
+          'weaponThree': weaponThree,
+          'weaponFour': weaponFour,
+          'name': widget.characterName,
+        }, SetOptions(merge: true)); // Merge ensures only this field is updated
+      } catch (e) {
+        print('Error saving weapons: $e');
+      }
+    }
+  }
 
   Widget weaponOneScreen() {
     return SingleChildScrollView(
@@ -274,6 +298,12 @@ class _EquipmentSelectionState extends State<EquipmentSelection> {
             textContent: "Next",
             onPressed: () {
               _saveSelections();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CantripSelection(characterName: widget.characterName), // Pass characterName
+                ),
+              );
             },
           ),
         ],

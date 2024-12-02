@@ -9,7 +9,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 class RaceSelection extends StatefulWidget {
   final String characterName; // Use characterName instead of characterID
 
-  const RaceSelection({super.key, required this.characterName}); // Update constructor
+  const RaceSelection(
+      {super.key, required this.characterName}); // Update constructor
 
   @override
   _RaceSelectionState createState() => _RaceSelectionState();
@@ -20,21 +21,53 @@ class _RaceSelectionState extends State<RaceSelection> {
   final Color customColor = const Color.fromARGB(255, 138, 28, 20);
 
   // Method to save the selected race to Firebase
-  void _saveSelections() async {
-    final String? currentUserUid = FirebaseAuth.instance.currentUser?.uid;
+  // void _saveSelections() async {
+  //   final String? currentUserUid = FirebaseAuth.instance.currentUser?.uid;
 
-    if (currentUserUid != null) {
-      final docRef = FirebaseFirestore.instance
+  //   if (currentUserUid != null) {
+  //     final docRef = FirebaseFirestore.instance
+  //         .collection('app_user_profiles')
+  //         .doc(currentUserUid); // Use the UID directly
+
+  //     try {
+  //       await docRef.set({
+  //         'race': _selectedRace,
+  //       }, SetOptions(merge: true)); // Merge ensures only this field is updated
+  //     } catch (e) {
+  //       print('Error saving race: $e');
+  //     }
+  //   }
+  // }
+  Future<void> _saveSelections() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      print('User not authenticated');
+      return;
+    }
+    final userId = user.uid;
+
+    try {
+      final firestore = FirebaseFirestore.instance;
+      final docRef = firestore
           .collection('app_user_profiles')
-          .doc(currentUserUid); // Use the UID directly
+          .doc(userId)
+          .collection('characters')
+          .doc(widget.characterName);
 
-      try {
-        await docRef.set({
-          'race': _selectedRace,
-        }, SetOptions(merge: true)); // Merge ensures only this field is updated
-      } catch (e) {
-        print('Error saving race: $e');
-      }
+      await docRef.set({
+        'character name': widget.characterName,
+      }, SetOptions(merge: true));
+      await docRef.set({
+        'character name' : widget.characterName,
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Data saved successfully!")),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to save data: $e")),
+      );
     }
   }
 
@@ -64,7 +97,9 @@ class _RaceSelectionState extends State<RaceSelection> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ClassSelection(characterName: widget.characterName, race: _selectedRace), // Pass characterName
+                  builder: (context) => ClassSelection(
+                      characterName: widget.characterName,
+                      race: _selectedRace), // Pass characterName
                 ),
               );
             },

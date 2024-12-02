@@ -30,6 +30,7 @@ import 'providers/provider_tts.dart';
 import 'util/file/util_file.dart';
 import 'firebase_options.dart';
 import 'theme/theme.dart';
+import 'package:dnd_character_creator/screens/dnd_forms/user_character_screen.dart'; // Import your UserCharacterScreen
 
 //////////////////////////////////////////////////////////////////////////
 // Providers
@@ -81,24 +82,20 @@ Future<void> main() async {
 //////////////////////////////////////////////////////////////////////////
 // Main class which is the root of the app.
 //////////////////////////////////////////////////////////////////////////
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-//////////////////////////////////////////////////////////////////////////
-// The actual STATE which is managed by the above widget.
-//////////////////////////////////////////////////////////////////////////
-class _MyAppState extends State<MyApp> {
-  // The "instance variables" managed in this state
-  // NONE
-
-  // Router
+class MyApp extends StatelessWidget {
   final GoRouter _router = GoRouter(
-    initialLocation: ScreenLoginValidation.routeName,
+    initialLocation: UserCharacterScreen.routeName, // Set initial route
     routes: [
+      GoRoute(
+        path: UserCharacterScreen.routeName,
+        builder: (BuildContext context, GoRouterState state) =>
+            UserCharacterScreen(),
+      ),
+      GoRoute(
+        path: ScreenAlternate.routeName,
+        builder: (BuildContext context, GoRouterState state) =>
+            ScreenAlternate(),
+      ),
       GoRoute(
         path: ScreenLoginValidation.routeName,
         builder: (context, state) => const ScreenLoginValidation(),
@@ -120,16 +117,11 @@ class _MyAppState extends State<MyApp> {
         path: ScreenHome.routeName,
         builder: (BuildContext context, GoRouterState state) => ScreenHome(),
       ),
-      GoRoute(
-        path: ScreenAlternate.routeName,
-        builder: (BuildContext context, GoRouterState state) =>
-            ScreenAlternate(),
-      ),
     ],
   );
 
   //////////////////////////////////////////////////////////////////////////
-  // Primary Flutter method overriden which describes the layout
+  // Primary Flutter method overridden which describes the layout
   // and bindings for this widget.
   //////////////////////////////////////////////////////////////////////////
   @override

@@ -1,3 +1,5 @@
+import 'package:dnd_character_creator/screens/dnd_forms/character_name.dart';
+import 'package:dnd_character_creator/screens/dnd_forms/user_character_screen.dart';
 import 'package:flutter/material.dart';
 
 class MainDrawer extends StatelessWidget {
@@ -27,7 +29,7 @@ class MainDrawer extends StatelessWidget {
                   width: 18,
                 ),
                 Text(
-'Character Builder',
+                  'Character Builder',
                   style: Theme.of(context).textTheme.titleLarge!.copyWith(
                         color: Theme.of(context).colorScheme.primary,
                       ),
@@ -48,7 +50,14 @@ class MainDrawer extends StatelessWidget {
                     fontSize: 24,
                   ),
             ),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UserCharacterScreen()
+                  ),
+                );
+            },
           ),
           ListTile(
             leading: Icon(
@@ -63,7 +72,15 @@ class MainDrawer extends StatelessWidget {
                     fontSize: 24,
                   ),
             ),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CharacterName(
+                    ),
+                  ),
+                );
+            },
           ),
           const Spacer(),
           Column(
@@ -74,7 +91,7 @@ class MainDrawer extends StatelessWidget {
                   size: 26,
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
-title: Text(
+                title: Text(
                   'Profile',
                   style: Theme.of(context).textTheme.titleLarge!.copyWith(
                         color: Theme.of(context).colorScheme.onSurface,
