@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dnd_character_creator/screens/dnd_forms/background_user_screen.dart';
+import 'package:dnd_character_creator/screens/dnd_forms/character_equipment_user_screen.dart';
 import 'package:dnd_character_creator/screens/dnd_forms/character_other.dart';
 import 'package:dnd_character_creator/widgets/dnd_form_widgets/main_drawer.dart';
 import 'package:firebase_auth/firebase_auth.dart';

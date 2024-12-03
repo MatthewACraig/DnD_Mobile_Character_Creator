@@ -326,6 +326,7 @@ class _ImageGeneratorState extends State<ImageGenerator> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Nearly Done'),
+        backgroundColor: customColor,foregroundColor: Colors.white,
       ),
       drawer: const MainDrawer(),
       bottomNavigationBar: Row(

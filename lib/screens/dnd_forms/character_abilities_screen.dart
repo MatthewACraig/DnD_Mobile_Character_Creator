@@ -25,19 +25,19 @@ class _CharacterAbilitiesState extends State<CharacterAbilities> {
 
 //TODO: snag all this from firestore pretty please thank you very much
   final Map<String, int> abilityScores = {
-    'Strength': 8,
-    'Dexterity': 16,
-    'Constitution': 14,
-    'Intelligence': 10,
-    'Wisdom': 14,
-    'Charisma': 12
+    // 'Strength': 8,
+    // 'Dexterity': 16,
+    // 'Constitution': 14,
+    // 'Intelligence': 10,
+    // 'Wisdom': 14,
+    // 'Charisma': 12
   };
   final List<String> chosenProficiencies = [
-    "Acrobatics",
-    "Perception",
-    "Stealth",
-    "Persuasion",
-    "Investigation",
+    // "Acrobatics",
+    // "Perception",
+    // "Stealth",
+    // "Persuasion",
+    // "Investigation",
   ];
   final Map<String, int> modifiers = {
     'Strength': 0,

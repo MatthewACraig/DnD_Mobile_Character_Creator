@@ -475,8 +475,7 @@ class _CharacterTraitScreenState extends State<CharacterTraitScreen> {
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text("Character Traits"),
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
+backgroundColor: customColor,foregroundColor: Colors.white,      ),
       drawer: const MainDrawer(),
       bottomNavigationBar: Row(
         children: [

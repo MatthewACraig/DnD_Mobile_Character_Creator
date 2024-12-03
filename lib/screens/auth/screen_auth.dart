@@ -10,6 +10,7 @@
 // Imports
 //////////////////////////////////////////////////////////////////////////
 // Flutter external package imports
+import 'package:dnd_character_creator/screens/dnd_forms/user_character_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
@@ -125,7 +126,8 @@ class _ScreenAuthState extends ConsumerState<ScreenAuth> {
       User? user = _auth.currentUser;
       if (isLogin) {
         // Attempt login
-        String errorMessage = (await _providerAuth.signinWithPassword(email, password)).trim();
+        String errorMessage =
+            (await _providerAuth.signinWithPassword(email, password)).trim();
 
         // If there was an error, display it...otherwise load the profile
         if (errorMessage.isNotEmpty) {
@@ -150,22 +152,25 @@ class _ScreenAuthState extends ConsumerState<ScreenAuth> {
             await FirebaseAuth.instance.currentUser?.sendEmailVerification();
           }
           _providerUserProfile.email = user?.email ?? email;
-          _providerUserProfile.accountCreationStep = AccountCreationStep.ACC_STEP_ONBOARDING_PROFILE_CONTACT_INFO;
+          _providerUserProfile.accountCreationStep =
+              AccountCreationStep.ACC_STEP_ONBOARDING_PROFILE_CONTACT_INFO;
           await _providerUserProfile.writeUserProfileToDb();
           _providerAuth.isSigningIn = false;
         } catch (e) {
-          AppLogger.warning("Issue with sending email verification or writing to user profile.  email: $e");
+          AppLogger.warning(
+              "Issue with sending email verification or writing to user profile.  email: $e");
         }
 
         // ...and send verification email
-        if (user != null && !user.emailVerified) {
-          await user.sendEmailVerification();
+        // if (user != null && !user.emailVerified) {
+        //   await user.sendEmailVerification();
 
-          // ...and display to user as "Snack bar" pop-up at bottom of screen
-          if (mounted) {
-            Snackbar.show(SnackbarDisplayType.SB_INFO, 'Check ${user.email} for verification link.', context);
-          }
-        }
+        //   // ...and display to user as "Snack bar" pop-up at bottom of screen
+        //   if (mounted) {
+        //     Snackbar.show(SnackbarDisplayType.SB_INFO,
+        //         'Check ${user.email} for verification link.', context);
+        //   }
+        // }
       }
     } on FirebaseAuthException catch (err) {
       // If error, dis-engage loading screen and display to user
@@ -190,7 +195,8 @@ class _ScreenAuthState extends ConsumerState<ScreenAuth> {
 
     // If the form validates, save the data and then execute the callback function,
     // which attempts to either login to existing account or signup for new account.
-    final isValid = _formKey.currentState!.validate() && _passwordStrength >= .6;
+    final isValid =
+        _formKey.currentState!.validate() && _passwordStrength >= .6;
     if (isValid) {
       _formKey.currentState!.save();
       _submitAuthForm(
@@ -199,8 +205,17 @@ class _ScreenAuthState extends ConsumerState<ScreenAuth> {
         _signInMode,
         context,
       );
+      setState(() {});
+      //push the user to the home screen
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => UserCharacterScreen(),
+        ),
+      );
     } else if (_passwordStrength < .6) {
-      Snackbar.show(SnackbarDisplayType.SB_ERROR, "Please improve your password strength.", context);
+      Snackbar.show(SnackbarDisplayType.SB_ERROR,
+          "Please improve your password strength.", context);
     }
   }
 
@@ -237,7 +252,8 @@ class _ScreenAuthState extends ConsumerState<ScreenAuth> {
       }
 
       /// Make sure the password contains a letter.
-      if (!(RegExp(r"(?=.*[a-z])").hasMatch(value) || RegExp(r"(?=.*[A-Z])").hasMatch(value))) {
+      if (!(RegExp(r"(?=.*[a-z])").hasMatch(value) ||
+          RegExp(r"(?=.*[A-Z])").hasMatch(value))) {
         if (invalidPassword) {
           passwordResponse += ", letter";
         } else {
@@ -284,7 +300,8 @@ class _ScreenAuthState extends ConsumerState<ScreenAuth> {
           String endingPhrase = (errorCount > 2) ? ", and" : " and";
           passwordResponse = passwordResponse.substring(0, lastIndex) +
               endingPhrase +
-              passwordResponse.substring(lastIndex + 1, passwordResponse.length);
+              passwordResponse.substring(
+                  lastIndex + 1, passwordResponse.length);
         }
 
         return passwordResponse;
@@ -344,8 +361,8 @@ class _ScreenAuthState extends ConsumerState<ScreenAuth> {
   }
 
   final snackBar = const SnackBar(
-    content:
-        Text('If you have an account, a Reset Password Email will be sent to you. Remeber to check your spam folder.'),
+    content: Text(
+        'If you have an account, a Reset Password Email will be sent to you. Remeber to check your spam folder.'),
   );
   Future resetPassword(String email) async {
     showDialog(
@@ -402,13 +419,13 @@ class _ScreenAuthState extends ConsumerState<ScreenAuth> {
                     padding: const EdgeInsets.all(0),
                     child: Center(
                       child: Image.asset(
-                        "images/logo.png",
+                        'assets/dragon.png',
                         width: MediaQuery.of(context).size.width * 0.8,
                       ),
                     ),
                   ),
                   Text(
-                    "My App",
+                    "D&D Character Creator",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 30,
@@ -427,7 +444,9 @@ class _ScreenAuthState extends ConsumerState<ScreenAuth> {
                       autocorrect: false,
                       textCapitalization: TextCapitalization.none,
                       validator: (value) {
-                        if (value!.isEmpty || !value.contains('@') || !value.contains('.')) {
+                        if (value!.isEmpty ||
+                            !value.contains('@') ||
+                            !value.contains('.')) {
                           return 'Please enter a valid email address.';
                         }
                         return null;
@@ -460,9 +479,12 @@ class _ScreenAuthState extends ConsumerState<ScreenAuth> {
                         return null;
                       },
                       onChanged: (context) {
-                        _passwordStrength = getPasswordStrength(_passwordController.text);
-                        _strengthText = getPasswordStrengthText(_passwordStrength);
-                        _strengthColor = getPasswordStrengthColor(_passwordStrength);
+                        _passwordStrength =
+                            getPasswordStrength(_passwordController.text);
+                        _strengthText =
+                            getPasswordStrengthText(_passwordStrength);
+                        _strengthColor =
+                            getPasswordStrengthColor(_passwordStrength);
                         setState(() {});
                       },
                       decoration: InputDecoration(
@@ -472,8 +494,12 @@ class _ScreenAuthState extends ConsumerState<ScreenAuth> {
                           highlightColor: Colors.transparent,
                           icon: Icon(
                             // Based on passwordVisible state choose the icon
-                            _passwordVisible ? Icons.visibility : Icons.visibility_off,
-                            color: Theme.of(context).inputDecorationTheme.iconColor,
+                            _passwordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Theme.of(context)
+                                .inputDecorationTheme
+                                .iconColor,
                           ),
                           onPressed: () {
                             // Update the state i.e. toogle the state of passwordVisible variable
@@ -497,7 +523,9 @@ class _ScreenAuthState extends ConsumerState<ScreenAuth> {
                         onPressed: () {
                           showPopup();
                         },
-                        child: Align(alignment: Alignment.centerRight, child: const Text("Forgot Password?")),
+                        child: Align(
+                            alignment: Alignment.centerRight,
+                            child: const Text("Forgot Password?")),
                       ),
                     ),
                   ///////////////////////////////////////////////////////////////////////
@@ -540,8 +568,12 @@ class _ScreenAuthState extends ConsumerState<ScreenAuth> {
                             highlightColor: Colors.transparent,
                             icon: Icon(
                               // Based on passwordVisible state choose the icon
-                              _passwordVisible ? Icons.visibility : Icons.visibility_off,
-                              color: Theme.of(context).inputDecorationTheme.iconColor,
+                              _passwordVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: Theme.of(context)
+                                  .inputDecorationTheme
+                                  .iconColor,
                             ),
                             onPressed: () {
                               // Update the state i.e. toogle the state of passwordVisible variable

@@ -290,7 +290,7 @@ class _StatsScreenState extends State<StatsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Stats")),
+      appBar: AppBar(title: const Text("Stats"), backgroundColor: customColor,foregroundColor: Colors.white,),
       drawer: const MainDrawer(),
       bottomNavigationBar: Row(
         children: [

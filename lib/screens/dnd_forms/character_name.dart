@@ -39,12 +39,13 @@ class _CharacterNameState extends State<CharacterName> {
   }
 
   //set up save character name to send a map with the character name to the firestore
-  
+  final customColor = const Color.fromARGB(255, 138, 28, 20);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: customColor,foregroundColor: Colors.white,
         title: const Text('Character Name'),
       ),
       body: Padding(

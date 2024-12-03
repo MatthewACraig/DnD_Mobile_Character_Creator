@@ -282,8 +282,9 @@ class _EquipmentSelectionState extends State<EquipmentSelection> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: const Text("Character Traits"),
+        title: const Text("Equipment"),
         iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: customColor,foregroundColor: Colors.white,
       ),
       drawer: const MainDrawer(),
       bottomNavigationBar: Row(

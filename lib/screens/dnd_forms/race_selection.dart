@@ -108,7 +108,8 @@ class _RaceSelectionState extends State<RaceSelection> {
         ],
       ),
       appBar: AppBar(
-        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        backgroundColor: customColor,
+        foregroundColor: Colors.white,
         title: Text(
           'Race Selection for ${widget.characterName}', // Use characterName here
           style: Theme.of(context).appBarTheme.titleTextStyle,

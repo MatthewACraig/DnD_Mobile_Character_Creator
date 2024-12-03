@@ -299,7 +299,7 @@ class _SpecificsScreenState extends State<SpecificsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Specifics"),
-        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: customColor,foregroundColor: Colors.white,
       ),
       drawer: const MainDrawer(),
       bottomNavigationBar: Row(

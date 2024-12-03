@@ -53,6 +53,8 @@ class _ClassSelectionState extends State<ClassSelection> {
     });
   }
 
+  final customColor = const Color.fromARGB(255, 138, 28, 20);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,8 +90,7 @@ class _ClassSelectionState extends State<ClassSelection> {
         ),
       ),
       appBar: AppBar(
-        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-        title: Text(
+backgroundColor: customColor, foregroundColor: Colors.white,        title: Text(
           'Class Selection for ${widget.characterName}', // Use characterName here
           style: Theme.of(context).appBarTheme.titleTextStyle,
         ),
