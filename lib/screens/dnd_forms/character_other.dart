@@ -1,7 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_radar_chart/flutter_radar_chart.dart';
 
 class CharacterOther extends StatefulWidget {
+  CharacterOther({super.key, required this.characterName});
+
+  final characterName;
+
   @override
   State<CharacterOther> createState() => _CharacterOtherState();
 }
@@ -9,26 +15,81 @@ class CharacterOther extends StatefulWidget {
 class _CharacterOtherState extends State<CharacterOther> {
   Color customColor = const Color.fromARGB(255, 138, 28, 20);
 //TODO: Fetch from firestore
-  final chosenlifeStyle = 'Wealthy';
-  final chosenAlignment = 'Lawful Good';
-  final chosenFaith = 'Flat Earther';
-  final chosenLanguages = ['Common', 'Dwarvish', 'Elvish'];
-  final chosenHair = 'Brown';
-  final chosenEyes = 'Brown';
-  final chosenSkin = 'White';
-  final chosenHeight = '5\'10"';
-  final chosenWeight = '150 lbs';
-  final chosenAge = '25';
-  final chosenGender = 'Male';
-  final chosenPersonality = 'Aggressive';
-  final chosenIdeals = 'Justice';
-  final chosenBonds = 'Family';
-  final chosenFlaws = 'Frogs are very scary. Whenever I see a frog jump into a lake full of frogs I cry. Avoid frogs at all costs';
-  final chosenOrganizations = 'Marching Band';
-  final chosenAllies = 'The french horn paleyers';
-  final chosenEnemies = 'Trumpets and football players';
-  final chosenBackstory = 'I was once a frog.';
-  final everythingElse = 'I have no idea what I am doing.';
+  var chosenlifeStyle = 'Wealthy';
+  var chosenAlignment = 'Lawful Good';
+  var chosenFaith = 'Flat Earther';
+  var chosenLanguages = ['Common', 'Dwarvish', 'Elvish'];
+  var chosenHair = 'Brown';
+  var chosenEyes = 'Brown';
+  var chosenSkin = 'White';
+  var chosenHeight = '5\'10"';
+  var chosenWeight = '150 lbs';
+  var chosenAge = '25';
+  var chosenGender = 'Male';
+  var chosenPersonality = 'Aggressive';
+  var chosenIdeals = 'Justice';
+  var chosenBonds = 'Family';
+  var chosenFlaws =
+      'Frogs are very scary. Whenever I see a frog jump into a lake full of frogs I cry. Avoid frogs at all costs';
+  var chosenOrganizations = 'Marching Band';
+  var chosenAllies = 'The french horn paleyers';
+  var chosenEnemies = 'Trumpets and football players';
+  var chosenBackstory = 'I was once a frog.';
+  var everythingElse = 'I have no idea what I am doing.';
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCharacterTraits();
+  }
+
+  Future<void> _fetchCharacterTraits() async {
+    final String? currentUserUid = FirebaseAuth.instance.currentUser?.uid;
+
+    if (currentUserUid != null) {
+      try {
+        final docRef = FirebaseFirestore.instance
+            .collection('app_user_profiles')
+            .doc(currentUserUid)
+            .collection('characters')
+            .doc(widget.characterName);
+
+        final docSnapshot = await docRef.get();
+
+        if (docSnapshot.exists) {
+          final data = docSnapshot.data();
+          if (data != null && data['characterTraits'] != null) {
+            final traits = Map<String, dynamic>.from(data['characterTraits']);
+            setState(() {
+              chosenAlignment = traits['alignment'] ?? 'Unknown';
+              chosenFaith = traits['faith'] ?? 'Unknown';
+              chosenlifeStyle = traits['lifestyle'] ?? 'Unknown';
+              chosenHair = traits['hair'] ?? 'Unknown';
+              chosenEyes = traits['eyes'] ?? 'Unknown';
+              chosenSkin = traits['skin'] ?? 'Unknown';
+              chosenHeight = traits['height'] ?? 'Unknown';
+              chosenWeight = traits['weight'] ?? 'Unknown';
+              chosenAge = traits['age'] ?? 'Unknown';
+              chosenGender = traits['gender'] ?? 'Unknown';
+              chosenPersonality = traits['personalityTraits'] ?? 'Unknown';
+              chosenIdeals = traits['ideals'] ?? 'Unknown';
+              chosenBonds = traits['bonds'] ?? 'Unknown';
+              chosenFlaws = traits['flaws'] ?? 'Unknown';
+              chosenOrganizations = traits['organization'] ?? 'Unknown';
+              chosenAllies = traits['allies'] ?? 'Unknown';
+              chosenEnemies = traits['enemies'] ?? 'Unknown';
+              chosenBackstory = traits['backstory'] ?? 'Unknown';
+              everythingElse = traits['other'] ?? 'Unknown';
+            });
+          }
+        } else {
+          print('Document does not exist.');
+        }
+      } catch (e) {
+        print('Error fetching traits: $e');
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +193,6 @@ class _CharacterOtherState extends State<CharacterOther> {
                   style: const TextStyle(color: Colors.black, fontSize: 20)),
             ),
           ),
-
           const SizedBox(height: 10),
           const Divider(color: Colors.black, thickness: 2),
           const SizedBox(height: 10),

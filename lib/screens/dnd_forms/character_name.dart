@@ -52,7 +52,7 @@ class _CharacterNameState extends State<CharacterName> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.asset('assets/DragonIcon.png', height: 150), // Fixed usage
+            Image.asset('assets/dragon.png', height: 244), // Fixed usage
             const SizedBox(height: 20),
             const Text(
               'Enter your character name:',

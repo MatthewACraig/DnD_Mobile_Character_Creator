@@ -3,6 +3,7 @@ import 'package:dnd_character_creator/screens/dnd_forms/background_selcetion.dar
 import 'package:dnd_character_creator/screens/dnd_forms/specifics_screen.dart';
 import 'package:dnd_character_creator/Widgets/dnd_form_widgets/class_data_loader.dart';
 import 'package:dnd_character_creator/Widgets/buttons/navigation_button.dart';
+import 'package:dnd_character_creator/widgets/dnd_form_widgets/main_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:dnd_character_creator/widgets/buttons/button_with_padding.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -93,6 +94,7 @@ class _ClassSelectionState extends State<ClassSelection> {
           style: Theme.of(context).appBarTheme.titleTextStyle,
         ),
       ),
+      drawer: MainDrawer(),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

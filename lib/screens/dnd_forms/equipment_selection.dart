@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dnd_character_creator/screens/dnd_forms/character_trait_selection.dart';
 import 'package:dnd_character_creator/screens/dnd_forms/spell_selection.dart';
 import 'package:dnd_character_creator/widgets/loaders/weapon_data_loader.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -301,7 +302,7 @@ class _EquipmentSelectionState extends State<EquipmentSelection> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => CantripSelection(characterName: widget.characterName), // Pass characterName
+                  builder: (context) => CharacterTraitScreen(characterName: widget.characterName), // Pass characterName
                 ),
               );
             },

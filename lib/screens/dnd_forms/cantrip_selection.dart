@@ -263,7 +263,7 @@ class _CantripSelectionState extends State<CantripSelection> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => CharacterTraitScreen(),
+                  builder: (context) => CharacterTraitScreen(characterName: widget.characterName,),
                 ),
               );
             },

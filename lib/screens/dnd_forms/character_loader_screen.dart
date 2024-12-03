@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dnd_character_creator/screens/dnd_forms/background_user_screen.dart';
+import 'package:dnd_character_creator/screens/dnd_forms/character_other.dart';
 import 'package:dnd_character_creator/widgets/dnd_form_widgets/main_drawer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_radar_chart/flutter_radar_chart.dart';
 
 class CharacterLoaderScreen extends StatefulWidget {
   const CharacterLoaderScreen({
@@ -26,9 +29,18 @@ class CharacterLoaderScreen extends StatefulWidget {
 }
 
 class _CharacterLoaderScreenState extends State<CharacterLoaderScreen> {
-  
-
   bool _isLoading = false;
+  var imageURL;
+  List<int> abilityValues = [];
+
+  List<String> abilityLabels = [
+    'Strength',
+    'Dexterity',
+    'Constitution',
+    'Intelligence',
+    'Wisdom',
+    'Charisma',
+  ];
 
   // Map<String, int> abilityScores = {
   //   'Strength': 8,
@@ -54,6 +66,25 @@ class _CharacterLoaderScreenState extends State<CharacterLoaderScreen> {
     'Charisma': 0
   };
 
+  void _setAbilityValues() {
+    abilityValues = [
+      widget.abilityScores['Strength'] ?? 8, // Strength score
+      widget.abilityScores['Dexterity'] ?? 8, // Dexterity score
+      widget.abilityScores['Constitution'] ?? 8, // Constitution score
+      widget.abilityScores['Intelligence'] ?? 8, // Intelligence score
+      widget.abilityScores['Wisdom'] ?? 8, // Wisdom score
+      widget.abilityScores['Charisma'] ?? 8, // Charisma score
+    ];
+  }
+  // List<int> abilityValues = [
+  //   widget.abilityScores['Strength'] ?? 8, // Strength score
+  //   widget.abilityScores['Dexterity'] ?? 8, // Dexterity score
+  //   widget.abilityScores['Constitution'] ?? 8, // Constitution score
+  //   widget.abilityScores['Intelligence'] ?? 8, // Intelligence score
+  //   widget.abilityScores['Wisdom'] ?? 8, // Wisdom score
+  //   widget.abilityScores['Charisma'] ?? 8, // Charisma score
+  // ];
+
   final Map<String, String> skills = {
     'Acrobatics': 'Dexterity',
     'Animal Handling': 'Wisdom',
@@ -74,8 +105,6 @@ class _CharacterLoaderScreenState extends State<CharacterLoaderScreen> {
     'Survival': 'Wisdom',
   };
 
- 
-
   String _currentSection = 'Abilities';
   Color customColor = const Color.fromARGB(255, 138, 28, 20);
   final int proficiencyBonus = 2;
@@ -92,20 +121,59 @@ class _CharacterLoaderScreenState extends State<CharacterLoaderScreen> {
 
   void setModifiers() {
     setState(() {
-      modifiers['Strength'] = ((widget.abilityScores['Strength'] ?? 8) - 10) ~/ 2;
-      modifiers['Dexterity'] = ((widget.abilityScores['Dexterity'] ?? 8) - 10) ~/ 2;
-      modifiers['Constitution'] = ((widget.abilityScores['Constitution'] ?? 8) - 10) ~/ 2;
-      modifiers['Intelligence'] = ((widget.abilityScores['Intelligence'] ?? 8) - 10) ~/ 2;
-      modifiers['Wisdom'] = ((widget.abilityScores['Wisdom'] ?? 8)- 10) ~/ 2;
-      modifiers['Charisma'] = ((widget.abilityScores['Charisma'] ?? 8)- 10) ~/ 2;
+      modifiers['Strength'] =
+          ((widget.abilityScores['Strength'] ?? 8) - 10) ~/ 2;
+      modifiers['Dexterity'] =
+          ((widget.abilityScores['Dexterity'] ?? 8) - 10) ~/ 2;
+      modifiers['Constitution'] =
+          ((widget.abilityScores['Constitution'] ?? 8) - 10) ~/ 2;
+      modifiers['Intelligence'] =
+          ((widget.abilityScores['Intelligence'] ?? 8) - 10) ~/ 2;
+      modifiers['Wisdom'] = ((widget.abilityScores['Wisdom'] ?? 8) - 10) ~/ 2;
+      modifiers['Charisma'] =
+          ((widget.abilityScores['Charisma'] ?? 8) - 10) ~/ 2;
+    });
+  }
+
+  Future<String?> _getImageURL() async {
+    final String? currentUserUid = FirebaseAuth.instance.currentUser?.uid;
+
+    if (currentUserUid != null) {
+      try {
+        final docSnapshot = await FirebaseFirestore.instance
+            .collection('app_user_profiles')
+            .doc(currentUserUid)
+            .collection('characters')
+            .doc(widget.characterName)
+            .get();
+
+        if (docSnapshot.exists) {
+          return docSnapshot.data()?['imageUrl'] as String?;
+        } else {
+          debugPrint('Document does not exist.');
+        }
+      } catch (e) {
+        debugPrint('Error fetching imageURL: $e');
+      }
+    }
+    return null;
+  }
+
+  void _fetchImageURL() async {
+    final url = await _getImageURL();
+    setState(() {
+      imageURL = url;
+      print(imageURL);
     });
   }
 
   @override
   void initState() {
     super.initState();
-    
+
     setModifiers();
+    _setAbilityValues();
+    _fetchImageURL();
   }
 
   void setMainContent(String type) {
@@ -171,7 +239,8 @@ class _CharacterLoaderScreenState extends State<CharacterLoaderScreen> {
             const Spacer(),
             showStats(widget.abilityScores['Dexterity'] ?? 8, 'Dexterity'),
             const Spacer(),
-            showStats(widget.abilityScores['Constitution'] ?? 8, 'Constitution'),
+            showStats(
+                widget.abilityScores['Constitution'] ?? 8, 'Constitution'),
             const SizedBox(width: 25),
           ],
         ),
@@ -180,21 +249,45 @@ class _CharacterLoaderScreenState extends State<CharacterLoaderScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(width: 25),
-            showStats(widget.abilityScores['Intelligence'] ?? 8, 'Intelligence'),
+            showStats(
+                widget.abilityScores['Intelligence'] ?? 8, 'Intelligence'),
             const Spacer(),
             showStats(widget.abilityScores['Wisdom'] ?? 8, 'Wisdom'),
             const Spacer(),
             showStats(widget.abilityScores['Charisma'] ?? 8, 'Charisma'),
             const SizedBox(width: 25),
+
+            // RadarChart(ticks: const [5, 10, 15, 20], features: , data: data)
+            //   RadarChart(
+            //   ticks: const [5, 10, 15, 20], // Set your tick levels
+            //   features: abilityLabels,
+            //   data: [abilityValues], // Single data set for one character
+            //   graphColors: [customColor],
+            //   outlineColor: Colors.black, // Outline for the radar chart
+            // ),
           ],
         ),
-        const SizedBox(height: 20),
+        Container(
+          width: 300,
+          height: 300,
+          child: RadarChart(
+            ticks: const [5, 10, 15, 20], // Set your tick levels
+            features: abilityLabels,
+            data: [abilityValues], // Single data set for one character
+            graphColors: [customColor],
+            outlineColor: Colors.black, // Outline for the radar chart
+          ),
+        ),
+        const SizedBox(height: 40),
         buildProficiencies(),
+        const SizedBox(
+          height: 40,
+        )
       ],
     );
   }
 
- Widget weaponsScreen() {
+  Widget weaponsScreen() {
     return Column(
       children: [
         Text('Welp, no weapons yet'),
@@ -222,7 +315,8 @@ class _CharacterLoaderScreenState extends State<CharacterLoaderScreen> {
           itemCount: skills.keys.length,
           itemBuilder: (context, index) {
             String proficiency = skills.keys.elementAt(index);
-            String ability = skills[proficiency] ?? 'Strength'; //editied may need to come back to this
+            String ability = skills[proficiency] ??
+                'Strength'; //editied may need to come back to this
             int abilityModifier = modifiers[ability] ?? 0;
             bool isProficient = chosenProficiencies.contains(proficiency);
             int totalModifier =
@@ -260,11 +354,18 @@ class _CharacterLoaderScreenState extends State<CharacterLoaderScreen> {
     if (_currentSection == 'Abilities') {
       mainContent = abilitiesScreen();
     } else if (_currentSection == 'Weapons') {
-      mainContent = weaponsScreen();
+      mainContent = CharacterEquipment(characterName: widget.characterName);
+    } else if (_currentSection == 'Other') {
+      mainContent = CharacterOther(characterName: widget.characterName,);
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Character")),
+      appBar: AppBar(
+        title: const Text("Character"),
+        automaticallyImplyLeading: true,
+        backgroundColor: customColor,
+        foregroundColor: Colors.white,
+      ),
       drawer: const MainDrawer(),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -294,6 +395,11 @@ class _CharacterLoaderScreenState extends State<CharacterLoaderScreen> {
                   SizedBox(width: 130, child: Center(child: Text('Weapons'))),
               icon: Icon(Icons.language),
             ),
+            ButtonSegment(
+              value: 'Other',
+              label: const Text('Other'),
+              icon: const Icon(Icons.person),
+            ),
           ],
           selected: {_currentSection},
           emptySelectionAllowed: false,
@@ -316,7 +422,13 @@ class _CharacterLoaderScreenState extends State<CharacterLoaderScreen> {
                 ),
                 width: 65,
                 height: 65,
-                child: const Icon(Icons.person, color: Colors.white),
+                // child: const Icon(Icons.person, color: Colors.white),
+                child: IconButton(
+                  onPressed: () {},
+                  icon: imageURL != null
+                      ? Image.network(imageURL!, fit: BoxFit.cover)
+                      : const Icon(Icons.person, color: Colors.white),
+                ),
               ),
               const SizedBox(width: 15),
               Expanded(

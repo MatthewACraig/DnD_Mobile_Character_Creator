@@ -1,11 +1,16 @@
+import 'package:dnd_character_creator/screens/dnd_forms/image_generator.dart';
 import 'package:flutter/material.dart';
 import 'package:dnd_character_creator/widgets/loaders/alignment_data_loader.dart';
 import '../../widgets/dnd_form_widgets/main_drawer.dart';
 import 'package:dnd_character_creator/widgets/buttons/navigation_button.dart';
 import 'package:dnd_character_creator/widgets/loaders/lifestyle_data_loader.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class CharacterTraitScreen extends StatefulWidget {
-  const CharacterTraitScreen({super.key});
+  CharacterTraitScreen({super.key, required this.characterName});
+
+  final characterName;
 
   @override
   State<StatefulWidget> createState() {
@@ -53,22 +58,62 @@ class _CharacterTraitScreenState extends State<CharacterTraitScreen> {
   final TextEditingController _genderController = TextEditingController();
 
   //personal controllers
-  final TextEditingController _personalityTraitsController = TextEditingController();
+  final TextEditingController _personalityTraitsController =
+      TextEditingController();
   final TextEditingController _idealsController = TextEditingController();
   final TextEditingController _bondsController = TextEditingController();
   final TextEditingController _flawsController = TextEditingController();
 
   //notes controllers
-  final TextEditingController _organizationsController = TextEditingController();
+  final TextEditingController _organizationsController =
+      TextEditingController();
   final TextEditingController _alliesController = TextEditingController();
   final TextEditingController _enemiesController = TextEditingController();
   final TextEditingController _backstoryController = TextEditingController();
   final TextEditingController _otherController = TextEditingController();
 
-
   String _currentSection = "Details";
 
-  void _saveSelections() async {}
+  void _saveSelections() async {
+    final String? currentUserUid = FirebaseAuth.instance.currentUser?.uid;
+    if (currentUserUid != null) {
+      final docRef = FirebaseFirestore.instance
+          .collection('app_user_profiles')
+          .doc(currentUserUid)
+          .collection('characters')
+          .doc(widget.characterName); // Use the UID directly
+
+      final Map<String, String> traitsToSave = {
+        'alignment': chosenAlignment,
+        'faith': _faithController.text,
+        'lifestyle': chosenLifestyle,
+        'hair': _hairController.text,
+        'eyes': _eyesController.text,
+        'skin': _skinController.text,
+        'height': _heightController.text,
+        'weight': _weightController.text,
+        'age': _ageController.text,
+        'gender': _genderController.text,
+        'personalityTraits': _personalityTraitsController.text,
+        'ideals': _idealsController.text,
+        'bonds': _bondsController.text,
+        'flaws': _flawsController.text,
+        'organization': _organizationsController.text,
+        'allies': _alliesController.text,
+        'enemies': _enemiesController.text,
+        'backstory': _backstoryController.text,
+        'other': _otherController.text
+      };
+
+      try {
+        await docRef.set({
+          'characterTraits': traitsToSave,
+        }, SetOptions(merge: true)); // Merge ensures only this field is updated
+      } catch (e) {
+        print('Error saving traits: $e');
+      }
+    }
+  }
 
   Widget detailsScreen() {
     return SingleChildScrollView(
@@ -87,9 +132,9 @@ class _CharacterTraitScreenState extends State<CharacterTraitScreen> {
             DropdownButton(
               items: alignments
                   .map((alignment) => DropdownMenuItem(
-                value: alignment,
-                child: Text(alignment),
-              ))
+                        value: alignment,
+                        child: Text(alignment),
+                      ))
                   .toList(),
               onChanged: (alignment) =>
                   setState(() => chosenAlignment = alignment.toString()),
@@ -97,7 +142,6 @@ class _CharacterTraitScreenState extends State<CharacterTraitScreen> {
             ),
             AlignmentDataWidget(alignment: chosenAlignment),
             const SizedBox(height: 35),
-
             const Text(
               'Faith',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -113,7 +157,6 @@ class _CharacterTraitScreenState extends State<CharacterTraitScreen> {
               textInputAction: TextInputAction.done,
             ),
             const SizedBox(height: 20),
-
             const Text(
               'Lifestyle',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -122,9 +165,9 @@ class _CharacterTraitScreenState extends State<CharacterTraitScreen> {
             DropdownButton(
               items: lifestyles
                   .map((lifestyle) => DropdownMenuItem(
-                value: lifestyle,
-                child: Text(lifestyle),
-              ))
+                        value: lifestyle,
+                        child: Text(lifestyle),
+                      ))
                   .toList(),
               value: chosenLifestyle,
               onChanged: (lifestyle) =>
@@ -161,7 +204,6 @@ class _CharacterTraitScreenState extends State<CharacterTraitScreen> {
               textInputAction: TextInputAction.next,
             ),
             const SizedBox(height: 20),
-
             const Text(
               'Eyes',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -177,7 +219,6 @@ class _CharacterTraitScreenState extends State<CharacterTraitScreen> {
               textInputAction: TextInputAction.next,
             ),
             const SizedBox(height: 20),
-
             const Text(
               'Skin',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -208,7 +249,6 @@ class _CharacterTraitScreenState extends State<CharacterTraitScreen> {
               textInputAction: TextInputAction.next,
             ),
             const SizedBox(height: 20),
-
             const Text(
               'Weight',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -224,7 +264,6 @@ class _CharacterTraitScreenState extends State<CharacterTraitScreen> {
               textInputAction: TextInputAction.next,
             ),
             const SizedBox(height: 20),
-
             const Text(
               'Age',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -240,7 +279,6 @@ class _CharacterTraitScreenState extends State<CharacterTraitScreen> {
               textInputAction: TextInputAction.next,
             ),
             const SizedBox(height: 20),
-
             const Text(
               'Gender',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -265,7 +303,8 @@ class _CharacterTraitScreenState extends State<CharacterTraitScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min, // Ensures the column only takes as much space as needed
+        mainAxisSize: MainAxisSize
+            .min, // Ensures the column only takes as much space as needed
         children: [
           const Text(
             'Personality Traits',
@@ -282,7 +321,6 @@ class _CharacterTraitScreenState extends State<CharacterTraitScreen> {
             textInputAction: TextInputAction.next, // Move to the next field
           ),
           const SizedBox(height: 20),
-
           const Text(
             'Ideals',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -298,7 +336,6 @@ class _CharacterTraitScreenState extends State<CharacterTraitScreen> {
             textInputAction: TextInputAction.next,
           ),
           const SizedBox(height: 20),
-
           const Text(
             'Bonds',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -314,7 +351,6 @@ class _CharacterTraitScreenState extends State<CharacterTraitScreen> {
             textInputAction: TextInputAction.next,
           ),
           const SizedBox(height: 20),
-
           const Text(
             'Flaws',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -357,7 +393,6 @@ class _CharacterTraitScreenState extends State<CharacterTraitScreen> {
             textInputAction: TextInputAction.next,
           ),
           const SizedBox(height: 20),
-
           const Text(
             'Allies',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -373,7 +408,6 @@ class _CharacterTraitScreenState extends State<CharacterTraitScreen> {
             textInputAction: TextInputAction.next,
           ),
           const SizedBox(height: 20),
-
           const Text(
             'Enemies',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -418,13 +452,10 @@ class _CharacterTraitScreenState extends State<CharacterTraitScreen> {
             keyboardType: TextInputType.text,
             textInputAction: TextInputAction.done,
           ),
-
         ],
       ),
     );
-
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -460,6 +491,12 @@ class _CharacterTraitScreenState extends State<CharacterTraitScreen> {
             textContent: "Next",
             onPressed: () {
               _saveSelections();
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ImageGenerator(characterName: widget.characterName,)
+                  ),
+                );
             },
           ),
         ],
@@ -471,7 +508,7 @@ class _CharacterTraitScreenState extends State<CharacterTraitScreen> {
             SegmentedButton<String>(
               style: ButtonStyle(
                 backgroundColor: WidgetStateProperty.resolveWith<Color>(
-                      (states) {
+                  (states) {
                     if (states.contains(WidgetState.selected)) {
                       return customColor;
                     }
@@ -507,7 +544,6 @@ class _CharacterTraitScreenState extends State<CharacterTraitScreen> {
                 });
               },
             ),
-
             mainContent,
           ],
         ),

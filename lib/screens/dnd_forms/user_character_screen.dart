@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dnd_character_creator/models/character_item.dart';
 import 'package:dnd_character_creator/screens/dnd_forms/character_loader_screen.dart';
+import 'package:dnd_character_creator/screens/dnd_forms/character_name.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:dnd_character_creator/models/character.dart';
@@ -15,6 +16,7 @@ class UserCharacterScreen extends StatefulWidget {
 
 class _UserCharacterScreenState extends State<UserCharacterScreen> {
   List<Character> characters = [];
+  var imageURL;
 
   @override
   void initState() {
@@ -22,6 +24,7 @@ class _UserCharacterScreenState extends State<UserCharacterScreen> {
     fetchCharacters();
   }
 
+  // Method to fetch characters and their imageURL from Firestore
   Future<void> fetchCharacters() async {
     final String? currentUserUid = FirebaseAuth.instance.currentUser?.uid;
     if (currentUserUid != null) {
@@ -35,8 +38,13 @@ class _UserCharacterScreenState extends State<UserCharacterScreen> {
         final List<Character> loadedCharacters = [];
         for (var doc in querySnapshot.docs) {
           final data = doc.data();
+
+          imageURL =
+              data['imageUrl'] ?? ''; 
+
+          // Add character data including imageURL
           loadedCharacters.add(
-            Character.fromMap(data),
+            Character.fromMap(data), 
           );
         }
 
@@ -49,6 +57,7 @@ class _UserCharacterScreenState extends State<UserCharacterScreen> {
     }
   }
 
+  // Method to remove a character from Firestore
   void removeCharacter(Character character) {
     final String? currentUserUid = FirebaseAuth.instance.currentUser?.uid;
     if (currentUserUid != null) {
@@ -113,14 +122,24 @@ class _UserCharacterScreenState extends State<UserCharacterScreen> {
                     ),
                     child: ListTile(
                       leading: characters[index].picture.isNotEmpty
-                          ? Image.network(characters[index].picture,
-                              width: 50, height: 50, fit: BoxFit.cover)
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(25),
+                              child: Image.network(
+                                characters[index].picture, // Fetching imageURL
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.cover,
+                              ),
+                            )
                           : const Icon(Icons.person, size: 50),
-                      title: Text(characters[index].name,
-                          style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold)),
+                      title: Text(
+                        characters[index].name,
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
                       subtitle: Text(
-                          '${characters[index].race} - ${characters[index].characterClass}'),
+                        '${characters[index].race} - ${characters[index].characterClass}',
+                      ),
                       trailing: IconButton(
                         icon: const Icon(Icons.delete),
                         onPressed: () {
@@ -132,18 +151,36 @@ class _UserCharacterScreenState extends State<UserCharacterScreen> {
                 ),
               ),
             ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => CharacterName()));
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
 
 
 
-//working but ugly and unclickable
+
+
+
+
+
+
+
+
+
 // import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:dnd_character_creator/models/character.dart';
-// import 'package:dnd_character_creator/widgets/dnd_form_widgets/main_drawer.dart';
+// import 'package:dnd_character_creator/models/character_item.dart';
+// import 'package:dnd_character_creator/screens/dnd_forms/character_loader_screen.dart';
+// import 'package:dnd_character_creator/screens/dnd_forms/character_name.dart';
 // import 'package:flutter/material.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:dnd_character_creator/models/character.dart';
+// import 'package:dnd_character_creator/widgets/dnd_form_widgets/main_drawer.dart';
 
 // class UserCharacterScreen extends StatefulWidget {
 //   static const routeName = '/home';
@@ -154,6 +191,7 @@ class _UserCharacterScreenState extends State<UserCharacterScreen> {
 
 // class _UserCharacterScreenState extends State<UserCharacterScreen> {
 //   List<Character> characters = [];
+//   var imageURL;
 
 //   @override
 //   void initState() {
@@ -174,15 +212,8 @@ class _UserCharacterScreenState extends State<UserCharacterScreen> {
 //         final List<Character> loadedCharacters = [];
 //         for (var doc in querySnapshot.docs) {
 //           final data = doc.data();
-
-//           // Safely access data, using default values if null
 //           loadedCharacters.add(
-//             Character(
-//               name: data['name'] ?? 'Unknown',  // Default to 'Unknown' if null
-//               race: data['race'] ?? 'Unknown',  // Default to 'Unknown' if null
-//               characterClass: data['class'] ?? 'Unknown',  // Default to 'Unknown' if null
-//               picture: data['picture'] ?? '',  // Default to empty string if null
-//             ),
+//             Character.fromMap(data),
 //           );
 //         }
 
@@ -194,6 +225,39 @@ class _UserCharacterScreenState extends State<UserCharacterScreen> {
 //       }
 //     }
 //   }
+
+// //   Future<String?> _getImageURL() async {
+// //   final String? currentUserUid = FirebaseAuth.instance.currentUser?.uid;
+
+// //   if (currentUserUid != null) {
+// //     try {
+// //       final docSnapshot = await FirebaseFirestore.instance
+// //           .collection('app_user_profiles')
+// //           .doc(currentUserUid)
+// //           .collection('characters')
+// //           .doc(widget.characterName)
+// //           .get();
+
+// //       if (docSnapshot.exists) {
+// //         return docSnapshot.data()?['imageURL'] as String?;
+// //       } else {
+// //         debugPrint('Document does not exist.');
+// //       }
+// //     } catch (e) {
+// //       debugPrint('Error fetching imageURL: $e');
+// //     }
+    
+// //   }
+// //   return null;
+// // }
+
+// // void _fetchImageURL() async {
+// //   final url = await _getImageURL();
+// //   setState(() {
+// //     imageURL = url;
+// //   });
+// // }
+
 
 //   void removeCharacter(Character character) {
 //     final String? currentUserUid = FirebaseAuth.instance.currentUser?.uid;
@@ -235,89 +299,55 @@ class _UserCharacterScreenState extends State<UserCharacterScreen> {
 //                 onDismissed: (direction) {
 //                   removeCharacter(characters[index]);
 //                 },
-//                 child: CharacterItem(character: characters[index]),
+//                 child: InkWell(
+//                   onTap: () {
+//                     Navigator.push(
+//                       context,
+//                       MaterialPageRoute(
+//                         builder: (context) => CharacterLoaderScreen(
+//                           characterName: characters[index].name,
+//                           characterBackground: characters[index].background,
+//                           characterClass: characters[index].characterClass,
+//                           characterRace: characters[index].race,
+//                           abilityScores: characters[index].abilityScores,
+//                         ),
+//                       ),
+//                     );
+//                   },
+//                   child: Card(
+//                     margin:
+//                         const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+//                     elevation: 4,
+//                     shape: RoundedRectangleBorder(
+//                       borderRadius: BorderRadius.circular(12),
+//                     ),
+//                     child: ListTile(
+//                       leading: characters[index].picture.isNotEmpty
+//                           ? Image.network(characters[index].picture,
+//                               width: 50, height: 50, fit: BoxFit.cover)
+//                           : const Icon(Icons.person, size: 50),
+//                       title: Text(characters[index].name,
+//                           style: const TextStyle(
+//                               fontSize: 18, fontWeight: FontWeight.bold)),
+//                       subtitle: Text(
+//                           '${characters[index].race} - ${characters[index].characterClass}'),
+//                       trailing: IconButton(
+//                         icon: const Icon(Icons.delete),
+//                         onPressed: () {
+//                           removeCharacter(characters[index]);
+//                         },
+//                       ),
+//                     ),
+//                   ),
+//                 ),
 //               ),
 //             ),
-//     );
-//   }
-// }
-
-// class CharacterItem extends StatelessWidget {
-//   final Character character;
-
-//   const CharacterItem({Key? key, required this.character}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return ListTile(
-//       leading: character.picture.isNotEmpty
-//           ? Image.network(character.picture)
-//           : const Icon(Icons.person),
-//       title: Text(character.name),
-//       subtitle: Text('${character.race} - ${character.characterClass}'),
-//     );
-//   }
-// }
-
-
-
-
-// //bees
-// import 'package:dnd_character_creator/models/character_item.dart';
-// import 'package:dnd_character_creator/widgets/dnd_form_widgets/main_drawer.dart';
-// import 'package:flutter/material.dart';
-// import 'package:dnd_character_creator/models/character.dart';
-
-// class UserCharacterScreen extends StatelessWidget {
-
-//   static const routeName = '/home';
-
-//   UserCharacterScreen({super.key});
-//   void removeCharacter() {
-//     //TODO: Remove character from firestore and characters list
-//   }
-
-//   //TODO: Fetch all characters for the user instead of hardcoded below
-//   @override initState() {}
-
-//   final List<Character> characters = [
-//     Character(
-//         name: 'Aragorn',
-//         race: 'Human',
-//         characterClass: 'Fighter',
-//         picture:
-//         'https://static.wikia.nocookie.net/book-of-heroes-and-villains/images/8/83/Aragorn.jpg/revision/latest?cb=20220425030645g'),
-//     Character(
-//         name: 'Gimli',
-//         race: 'Dwarf',
-//         characterClass: 'Barbarian',
-//         picture:
-//         'https://static.wikia.nocookie.net/pjmidearthfilms/images/5/5c/Imli.jpg/revision/latest?cb=20191231092916'),
-//   ];
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: const Text("Your Characters")),
-//       drawer: const MainDrawer(),
-//       body: ListView.builder(
-//         itemCount: characters.length,
-//         itemBuilder: (ctx, index) => Dismissible(
-//           key: ValueKey(characters[index]),
-//           background: Container(
-//             color: Theme.of(context).colorScheme.error.withOpacity(0.75),
-//             margin: const EdgeInsets.symmetric(
-//               horizontal: 16,
+//             floatingActionButton: FloatingActionButton(
+//               onPressed: () {
+//                 Navigator.push(context, MaterialPageRoute(builder: (context) => CharacterName()));
+//               },
+//               child: const Icon(Icons.add),
 //             ),
-//           ),
-//           onDismissed: (direction) {
-//             //TODO: Remove character
-//             // removeCharacter(characters[index]);
-//           },
-
-//           child: CharacterItem(character: characters[index],),
-//         ),
-//       ),
 //     );
 //   }
 // }

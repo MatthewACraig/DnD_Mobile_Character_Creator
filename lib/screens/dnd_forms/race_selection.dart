@@ -1,5 +1,6 @@
 import 'package:dnd_character_creator/Widgets/buttons/navigation_button.dart';
 import 'package:dnd_character_creator/Widgets/dnd_form_widgets/race_data_loader.dart';
+import 'package:dnd_character_creator/widgets/dnd_form_widgets/main_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:dnd_character_creator/Widgets/buttons/button_with_padding.dart';
 import 'package:dnd_character_creator/Screens/dnd_forms/class_selection.dart';
@@ -113,6 +114,7 @@ class _RaceSelectionState extends State<RaceSelection> {
           style: Theme.of(context).appBarTheme.titleTextStyle,
         ),
       ),
+      drawer: MainDrawer(),
       body: Column(
         children: [
           const SizedBox(height: 20),
